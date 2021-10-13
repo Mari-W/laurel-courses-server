@@ -1,0 +1,10 @@
+{% include 'admin/nav.html' %}
+<form action="" method="post" class="ms-2">
+    <label for="json"></label>
+    <textarea style="width: 90vw; height: 75vh; box-sizing: border-box" name="json"
+              id="json">{{ tutors }}</textarea>
+    <br>
+    <button type="submit" class="btn btn-danger mb-4">Update</button>
+    <a href="/admin/{{ course }}/tutors" class="btn btn-secondary mb-4">Cancel</a>
+</form>
+{% include "footer.html" %}

@@ -1,0 +1,46 @@
+{% include 'admin/nav.html' %}
+<a class="btn btn-success my-2 ms-2 btn-sm" href="/admin/exercises/{{ course }}/add">Add</a>
+<table class="table table-borderless table-sm ms-2">
+    <thead>
+    <tr>
+        <th scope="col">Name</th>
+        <th scope="col">Start</th>
+        <th scope="col">End</th>
+        <th scope="col">Points</th>
+        <th scope="col">Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for exercise in exercises %}
+        <tr>
+            <td>{{ exercise.name }}</td>
+            <td>{{ exercise.start }}</td>
+            <td>{{ exercise.end }}</td>
+            <td>{{ exercise.points }}</td>
+            <td>
+                <div class="row">
+                    <div class="col">
+                        <form action="/admin/exercises/{{ course }}/delete" method="post">
+                            <input type="hidden" name="exercise" value="{{ exercise.name }}">
+                            <button class="btn btn-danger btn-sm badge">DELETE</button>
+                        </form>
+                    </div>
+                    <div class="col">
+                        <a class="btn btn-warning btn-sm badge"
+                           href="/admin/exercises/{{ course }}/{{ exercise.name }}/edit">EDIT</a>
+                    </div>
+                    <div class="col">
+                        <a class="btn btn-secondary btn-sm badge"
+                           href="/api/course/{{ course }}/exercise/{{ exercise.name }}/stats">Stats</a>
+                    </div>
+                    <div class="col">
+                        <a class="btn btn-secondary btn-sm badge"
+                           href="/api/course/{{ course }}/exercise/{{ exercise.name }}/graph">Graph</a>
+                    </div>
+                </div>
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% include "footer.html" %}

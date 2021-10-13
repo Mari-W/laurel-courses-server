@@ -1,0 +1,44 @@
+{% include 'admin/nav.html' %}
+<div class="card rounded-3 p-2 border-0 mt-2">
+    <div class="card-body">
+        <form action="" method="post">
+            <div class="mb-3">
+                <label for="name" class="form-label">Name</label>
+                <input type="text" class="form-control" id="name" name="name"
+                       aria-describedby="name_help" required>
+                <div id="name_help" class="form-text text-danger"> ! Must one word, be url conform (e.g awesome-course)
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="display_name" class="form-label">Display Name</label>
+                <input type="text" class="form-control" id="display_name" name="display_name"
+                       aria-describedby="display_name_help" required>
+                <div id="display_name_help" class="form-text"> Can be freely chosen (e.g An Introduction to Awesomeness)
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="semester" class="form-label">Semester</label>
+                <input type="text" class="form-control" id="semester" name="semester"
+                       aria-describedby="semester_help" required>
+                <div id="semester_help" class="form-text text-danger"> ! Following format is required: YYYY[W/S]S where
+                    YYYY is the year followed by WS or SS
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="website" class="form-label">Website</label>
+                <input type="url" class="form-control" id="website" name="website"
+                       aria-describedby="web_help">
+                <div id="web_help" class="form-text"> Website of course
+                </div>
+            </div>
+            <div class="mb-3 form-check">
+                <input type="checkbox" class="form-check-input" name="joinable"
+                       id="joinable">
+                <label class="form-check-label" for="joinable">Is this course joinable?</label>
+            </div>
+            <button type="submit" class="btn btn-success">Add</button>
+            <a class="btn btn-secondary ms-2" href="/admin/courses">Cancel</a>
+        </form>
+    </div>
+</div>
+{% include "footer.html" %}

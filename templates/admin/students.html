@@ -1,0 +1,33 @@
+{% include 'admin/nav.html' %}
+<table class="table table-borderless table-sm ms-2">
+    <thead>
+    <tr>
+        <th scope="col">Username</th>
+        <th scope="col">Name</th>
+        <th scope="col">Email</th>
+        <th scope="col">Matrikelnummer</th>
+        <th scope="col">Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for student in students %}
+        <tr>
+            <td>{{ student.username }}</td>
+            <td>{{ student.name }}</td>
+            <td>{{ student.email }}</td>
+            <td>{{ student.matrikelnummer }}</td>
+            <td>
+                <div class="row">
+                    <div class="col">
+                        <form action="/admin/students/{{ course }}/delete" method="post">
+                            <input type="hidden" name="student" value="{{ student.name }}">
+                            <button class="btn btn-danger btn-sm badge">DELETE</button>
+                        </form>
+                    </div>
+                </div>
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% include "footer.html" %}

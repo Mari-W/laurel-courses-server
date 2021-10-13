@@ -1,0 +1,30 @@
+{% include 'admin/nav.html' %}
+<div class="card rounded-3 p-2 border-0 mt-2">
+    <div class="card-body">
+        <form action="" method="post">
+            <div class="mb-3">
+                <label for="tutor" class="form-label">Name</label>
+                <select name="tutor" id="tutor" class="form-select" aria-label="select tutor"
+                        aria-describedby="tutor_help">
+                    <option selected>Select tutor</option>
+                    {% for user in users %}
+                        <option>{{ user }}</option>
+                    {% endfor %}
+                </select>
+                <div id="tutor_help" class="form-text">All gitea users, that do not have Students role
+                    in {{ course }} are listed here.
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="description" class="form-label">Description</label>
+                <input type="text" class="form-control" id="description" name="description"
+                       aria-describedby="description_help">
+                <div id="description_help" class="form-text"> Can be freely chosen (e.g tutorial date)
+                </div>
+            </div>
+            <button type="submit" class="btn btn-success">Add</button>
+            <a class="btn btn-secondary ms-2" href="/admin/tutors/{{ course }}">Cancel</a>
+        </form>
+    </div>
+</div>
+{% include "footer.html" %}

@@ -1,0 +1,45 @@
+{% include 'admin/nav.html' %}
+<div class="card rounded-3 p-2 border-0 mt-2">
+    <div class="card-body">
+        <form action="" method="post">
+            <div class="mb-3">
+                <label for="name" class="form-label">Exercise Name</label>
+                <input type="text" class="form-control" id="name" name="name"
+                       aria-describedby="name_help" required>
+                <div id="name_help" class="form-text text-danger">! Must follow linux directory name
+                    rules
+                    (e.g exercise-42)
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="start_date" class="form-label">Start Date</label>
+                <input type="datetime-local" class="form-control" name="start_date"
+                       id="start_date"
+                       aria-describedby="start_date_help" required>
+                <div id="start_date_help" class="form-text">On firefox use required format:
+                    YYYY-mm-ddTHH:MM where T splits date and time
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="end_date" class="form-label">Due Date</label>
+                <input type="datetime-local" class="form-control" name="end_date"
+                       id="end_date"
+                       aria-describedby="end_date_help" required>
+                <div id="end_date_help" class="form-text">On firefox use required format:
+                    YYYY-mm-ddTHH:MM where T splits date and time
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="points" class="form-label">Maximum Points</label>
+                <input type="number" step="0.5" class="form-control" name="points"
+                       id="points"
+                       aria-describedby="points_help" required>
+                <div id="points_help" class="form-text">Enter maximum points that can be reached
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+            <a class="btn btn-secondary ms-2" href="/admin/exercises/{{ course }}">Cancel</a>
+        </form>
+    </div>
+</div>
+{% include "footer.html" %}

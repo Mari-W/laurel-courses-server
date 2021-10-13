@@ -1,0 +1,81 @@
+{% include 'admin/nav.html' %}
+<a class="btn btn-success my-2 ms-2 btn-sm" href="/admin/courses/add">Add</a>
+<a class="btn btn-secondary my-2 ms-1 btn-sm" href="/api/courses">JSON</a>
+<table class="table table-borderless table-sm ms-2">
+    <thead>
+    <tr>
+        <th scope="col">UID</th>
+        <th scope="col">Name</th>
+        <th scope="col">Status</th>
+        <th scope="col">Access</th>
+        <th scope="col">Website</th>
+        <th scope="col">Students</th>
+        <th scope="col">Tutors</th>
+        <th scope="col">Exercises</th>
+        <th scope="col">Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for course in courses %}
+        <tr>
+            <th scope="row">{{ course.uid }}</th>
+            <td>{{ course.display_name }}</td>
+            <td>{{ "joinable" if course.open else "not joinable" }}</td>
+            <td>{{ "no student access" if course.restricted else "accessable" }}</td>
+            <td>{{ course.website }}</td>
+            <td>
+                <a href="/admin/students/{{ course.uid }}" class="btn btn-success btn-sm badge">OPEN STUDENTS PANEL</a>
+            </td>
+            <td>
+                <a href="/admin/tutors/{{ course.uid }}" class="btn btn-success btn-sm badge">OPEN
+                    TUTORS PANEL</a>
+            </td>
+            <td>
+                <a href="/admin/exercises/{{ course.uid }}" class="btn btn-success btn-sm badge">OPEN
+                    EXERCISES PANEL</a>
+            </td>
+            <td>
+                <div class="row">
+                    {% if course.open %}
+                        <div class="col">
+                            <form action="/admin/courses/close" method="post">
+                                <input type="hidden" name="course" value="{{ course.uid }}">
+                                <button type="submit" class="btn btn-warning btn-sm badge">CLOSE</button>
+                            </form>
+                        </div>
+                    {% else %}
+                        <div class="col">
+                            <form action="/admin/courses/open" method="post">
+                                <input type="hidden" name="course" value="{{ course.uid }}">
+                                <button type="submit" class="btn btn-warning btn-sm badge">OPEN</button>
+                            </form>
+                        </div>
+                    {% endif %}
+                    {% if course.restricted %}
+                        <div class="col">
+                            <form action="/admin/courses/permit" method="post">
+                                <input type="hidden" name="course" value="{{ course.uid }}">
+                                <button type="submit" class="btn btn-warning btn-sm badge">PERMIT</button>
+                            </form>
+                        </div>
+                    {% else %}
+                        <div class="col">
+                            <form action="/admin/courses/restrict" method="post">
+                                <input type="hidden" name="course" value="{{ course.uid }}">
+                                <button type="submit" class="btn btn-warning btn-sm badge">RESTRICT & CLOSE</button>
+                            </form>
+                        </div>
+                    {% endif %}
+                    <div class="col">
+                        <form action="/admin/courses/delete" method="post">
+                            <input type="hidden" name="course" value="{{ course.uid }}">
+                            <button type="submit" class="btn btn-danger btn-sm badge">DELETE</button>
+                        </form>
+                    </div>
+                </div>
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% include "footer.html" %}

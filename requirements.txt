@@ -1,0 +1,21 @@
+# OIDC provider lib
+Authlib
+
+# web (Authlib only currently works with Flask 1.0, keep an eye on it)
+Flask~=1.0
+uWSGI
+
+# ORM & DB driver
+Flask-SQLAlchemy
+SQLAlchemy~=1.4.23
+psycopg2
+
+# APIs
+git+https://github.com/Mari-W/gitea-api.git@master
+rocketchat_API
+
+# utils
+python-dotenv
+python-telegram-bot
+cachetools==4.2.2
+matplotlib

@@ -1,0 +1,26 @@
+{% with name="Admin Panel" %}
+    {% include "header.html" %}
+{% endwith %}
+<ul class="nav nav-pills nav-fill mt-3 mb-2 ms-2">
+    <li class="nav-item">
+        <a class="nav-link active bg-secondary text-white"
+           href="/admin/courses">Courses</a>
+    </li>
+</ul>
+<nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb" class="ms-2">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/">Home</a></li>
+        {% if "tutors" in request.path %}
+            <li class="breadcrumb-item"><a href="/admin/courses">Courses</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Tutors</li>
+        {% elif "exercises" in request.path %}
+            <li class="breadcrumb-item"><a href="/admin/courses">Courses</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Exercises</li>
+        {% elif "students" in request.path %}
+            <li class="breadcrumb-item"><a href="/admin/courses">Courses</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Students</li>
+        {% else %}
+            <li class="breadcrumb-item active" aria-current="page">Courses</li>
+        {% endif %}
+    </ol>
+</nav>

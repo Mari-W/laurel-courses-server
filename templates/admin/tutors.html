@@ -1,0 +1,38 @@
+{% include 'admin/nav.html' %}
+<a class="btn btn-success my-2 ms-2 btn-sm" href="/admin/tutors/{{ course }}/add">Add</a>
+<a class="btn btn-warning my-2 ms-2 btn-sm" href="/admin/tutors/{{ course }}/edit">Edit</a>
+<a class="btn btn-secondary my-2 ms-1 btn-sm" href="/api/{{ course }}/tutors">JSON</a>
+<table class="table table-borderless table-sm ms-2">
+    <thead>
+    <tr>
+        <th scope="col">Username</th>
+        <th scope="col">Name</th>
+        <th scope="col">Email</th>
+        <th scope="col">Description</th>
+        <th scope="col">Students</th>
+        <th scope="col">Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for (tutor, students) in tutors %}
+        <tr>
+            <th scope="row">{{ tutor.username}}</th>
+            <td>{{ tutor.name }}</td>
+            <td>{{ tutor.email }}</td>
+            <td>{{ tutor.description }}</td>
+            {% if students %}
+                <td>{{ students | join(", ") }}</td>
+            {% else %}
+                <td>no students yet</td>
+            {% endif %}
+            <td>
+                <form action="/admin/tutors/{{ course }}/delete" method="post">
+                    <input type="hidden" name="tutor" value="{{ tutor.username }}">
+                    <button class="btn btn-danger btn-sm badge">DELETE</button>
+                </form>
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% include "footer.html" %}
