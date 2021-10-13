@@ -148,7 +148,7 @@ def user_created():
                     rocket.add_student(str(course), username)
                 elif role == "tutor":
                     rocket.add_tutor(str(course), username, user["name"])
-                elif role == "owner":
+                elif role == "owner" or role == "admin":
                     rocket.add_owner(str(course), username, user["name"])
 
         if user["role"] == "admin":

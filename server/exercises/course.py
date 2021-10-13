@@ -99,10 +99,10 @@ class Course:
 
     # students
     def add_student(self, student: str) -> Optional[str]:
-        role = self.get_role(student)
-        if role is None:
-            info = auth.get_user_info(student)
-            if info:
+        info = auth.get_user_info(student)
+        if info:
+            role = self.get_role(student, is_admin=info["role"] == "admin")
+            if role is None:
                 if try_except(lambda: rocket.add_student(str(self), student),
                               lambda: rocket.remove_student(str(self), student)):
                     if try_except(lambda: gitea_exercises.add_student(str(self), student),
@@ -133,9 +133,9 @@ class Course:
                 else:
                     return f"failed to add student in rocket"
             else:
-                return f"failed to retrieve information about {student} from auth server"
+                return f"failed to add {student}, is {role}"
         else:
-            return f"failed to add {student}, is {role}"
+            return f"failed to retrieve information about {student} from auth server"
 
     def remove_student(self, student) -> Optional[str]:
         if self.has_student(student):
@@ -232,7 +232,7 @@ class Course:
             return f"failed to remove {tutor}, not a tutor"
 
     def assign_tutor(self, student: str):
-        if not (student.startswith("test") or auth.is_admin(student)):
+        if not student.startswith("test"):
             tutors = self.tutor_names
 
             # will be assigned on first tutor join
