@@ -91,6 +91,7 @@ def post_receive():
     files = [file for file in data["files"].split(",") if file]
 
     course = Course.from_str(owner)
+    print(str(course))
     if course is None:
         return "", 200
 
@@ -98,6 +99,7 @@ def post_receive():
         return "", 200
 
     role = course.get_role(username)
+    print(role)
 
     if role is None:
         return "", 200

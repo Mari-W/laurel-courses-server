@@ -577,6 +577,6 @@ class Course:
                 if not cs:
                     return None
                 c = Course(semester=cs[0].semester, name=cs[0].name)
-                if c.is_valid and c.exists:
+                if c.exists and c.is_valid:
                     return c
         return None
