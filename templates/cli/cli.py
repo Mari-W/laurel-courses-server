@@ -386,10 +386,10 @@ class Course:
                             if matches:
                                 with open(f"{exercise_path}/README.md", "w") as readme:
                                     first_line = first_line.replace("??", "0")
-                                    readme.write(first_line)
-                                    readme.write("No submission. ")
-                                    readme.write("This exercise was graded as no submission automatically. ")
-                                    readme.write("If you believe this is an error, contact your tutor. ")
+                                    readme.write(f"{first_line}\n")
+                                    readme.write("No submission.\n")
+                                    readme.write("This exercise was graded as no submission automatically.\n")
+                                    readme.write("If you believe this is an error, contact your tutor.\n")
 
     def validate_readmes(self):
         for path in git.modified:
