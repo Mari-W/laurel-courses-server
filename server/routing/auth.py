@@ -9,7 +9,7 @@ def cors(r: Response):
     origin = request.headers.get('Referer')
     if not origin:
         origin = request.headers.get('Origin')
-    if origin:
+    if not origin:
         return r
 
     r.headers.add('Access-Control-Allow-Origin', origin.rstrip("/"))
