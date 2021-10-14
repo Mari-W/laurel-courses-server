@@ -44,23 +44,14 @@ except ImportError:
 
 # ---------------------------------------------------------------------------------------------------------------------
 
-# VERSION = "{{version}}"
-# COURSE = "{{course}}"
-#
-# AUTH_URL = "{{auth_url}}"
-# AUTH_COOKIE = "{{auth_cookie}}"
-#
-# CLI_API_URL = "{{cli_url}}"
-# GIT_SSH = "{{git_ssh}}"
-
 VERSION = "{{version}}"
-COURSE = "2021WS-EiP"
+COURSE = "{{course}}"
 
-AUTH_URL = "http://auth.docker.localhost"
-AUTH_COOKIE = "proglang-auth"
+AUTH_URL = "{{auth_url}}"
+AUTH_COOKIE = "{{auth_cookie}}"
 
-CLI_API_URL = "http://courses.docker.localhost/cli"
-GIT_SSH = "ssh://git@git.docker.localhost:2222"
+CLI_API_URL = "{{cli_url}}"
+GIT_SSH = "{{git_ssh}}"
 
 
 # ---------------------------------------------------------------------------------------------------------------------
