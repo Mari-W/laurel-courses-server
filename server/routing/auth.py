@@ -12,8 +12,7 @@ def cors(r: Response):
     if origin:
         return r
 
-    r.headers.add('Access-Control-Allow-Origin',
-                  r.rstrip("/"))
+    r.headers.add('Access-Control-Allow-Origin', origin.rstrip("/"))
     r.headers.add("Access-Control-Allow-Headers", "*")
     r.headers.add("Access-Control-Allow-Credentials", "true")
     r.headers.add("Access-Control-Allow-Methods", "GET,POST")
