@@ -1,3 +1,4 @@
+import re
 from dataclasses import dataclass
 from typing import Optional
 from datetime import datetime
@@ -455,6 +456,25 @@ class Course:
         if return_exercises:
             return exercises, res
 
+        return res
+
+    def get_time_spent(self, exercise: str):
+        res = {}
+        for student in self.student_names:
+            notes = gitea_exercises.get_notes(str(self), exercise, student)
+            matches = re.findall(r"Zeitbedarf: (\d+[,.]?\d*) h", notes)
+            if len(matches) != 1:
+                continue
+            match = matches[0]
+            try:
+                spent = float(match)
+            except ValueError:
+                continue
+            spent = round(spent)
+            if spent in res:
+                res[spent] += 1
+            else:
+                res[spent] = 1
         return res
 
     def get_points(self, exercise: str, student: str):
