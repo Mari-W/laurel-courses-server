@@ -6,11 +6,14 @@ auth_bp = Blueprint("auth", __name__)
 
 
 def cors(r: Response):
-    if not request.headers.get('Referer'):
+    origin = request.headers.get('Referer')
+    if not origin:
+        origin = request.headers.get('Origin')
+    if origin:
         return r
 
     r.headers.add('Access-Control-Allow-Origin',
-                  request.headers.get('Referer').rstrip("/"))
+                  r.rstrip("/"))
     r.headers.add("Access-Control-Allow-Headers", "*")
     r.headers.add("Access-Control-Allow-Credentials", "true")
     r.headers.add("Access-Control-Allow-Methods", "GET,POST")
