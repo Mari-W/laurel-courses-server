@@ -89,7 +89,7 @@ def exercises(course, student):
                 r += f"{str(seconds)}s "
             return r + "left"
         elif exercise.start > now:
-            return f"{exercise.start.strftime('%d.%m at %H:%M')} to {exercise.start.strftime('%d.%m at %H:%M')}"
+            return f"from {exercise.start.strftime('%d.%m.%y %H:%M')} to {exercise.start.strftime('%d.%m.%y %H:%M')}"
 
     (exercises, student_stats) = course.get_student_exercises_stats(student, return_exercises=True)
     return cors(jsonify({
