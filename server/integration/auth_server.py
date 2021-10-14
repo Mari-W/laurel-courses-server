@@ -43,7 +43,7 @@ class Auth:
 
     def is_admin(self, user: str):
         user = self.get_user_info(user)
-        return user is not None and user == "admin"
+        return user is not None and user["role"] == "admin"
 
 
 auth = Auth()
