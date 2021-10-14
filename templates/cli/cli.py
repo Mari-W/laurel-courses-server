@@ -214,7 +214,7 @@ class Git:
             if not os.path.isdir(f"{COURSE}/{student}"):
                 self.__exec(f"git clone {GIT_SSH}/{COURSE}/{student}.git {COURSE}/{student}")
             else:
-                self.__exec(f"git -C {COURSE}/{student} pull --rebase")
+                self.__exec(f"git -C {COURSE}/{student} pull --rebase --autostash")
 
     def commit(self, commit_message):
         for student in course.students:
