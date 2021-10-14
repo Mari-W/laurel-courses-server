@@ -28,7 +28,7 @@ except ImportError:
                 raise Exception(__process.stderr)
 
             print("Installed 'requests'.")
-            os.execv(sys.executable, ['python'] + sys.argv)
+            os.execv(sys.argv[0], sys.argv)
         except Exception as install_exception:
             print(f"Failed to install 'requests': {install_exception}")
             print("Please manually install 'requests'")
@@ -205,6 +205,7 @@ class Git:
             print(f"Failed to execute {command}: {process.stdout}")
             print(f"Please make sure you have access to all repositories by adding SSH key to Gitea.")
             print(f"Also run this command again to make sure all repositories have this command applied.")
+            print(f"Before rerunning the command you can commit all changes by running ./cli.py -c 'Commit changes'")
             exit(1)
         return process.stdout
 
