@@ -20,7 +20,7 @@
                 <div class="row">
                     <div class="col">
                         <form action="/admin/students/{{ course }}/delete" method="post">
-                            <input type="hidden" name="student" value="{{ student.name }}">
+                            <input type="hidden" name="student" value="{{ student.username }}">
                             <button class="btn btn-danger btn-sm badge">DELETE</button>
                         </form>
                     </div>
