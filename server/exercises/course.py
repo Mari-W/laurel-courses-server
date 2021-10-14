@@ -196,6 +196,8 @@ class Course:
                         # first ever tutor, assign all students
                         if len(self.tutors) == 1:
                             for student in self.students:
+                                if student.username.startswith("test"):
+                                    continue
                                 try:
                                     with database as db:
                                         db += TutorStudentEntity(tutor=tutor, student=student.username,
