@@ -467,7 +467,7 @@ if __name__ == '__main__':
     session = Session()  # uses: store
 
     # run updater
-    # Updater()  # uses: session
+    Updater()  # uses: session
 
     # git command line wrapper
     git = Git()
