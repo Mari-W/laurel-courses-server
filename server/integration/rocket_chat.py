@@ -6,6 +6,7 @@ from rocketchat_API.rocketchat import RocketChat
 
 from server.env import Env
 from server.exercises.options import CreateCourseOption
+from server.integration.auth_server import auth
 
 
 @dataclass
@@ -20,6 +21,9 @@ class Rocket:
             self.api.channels_add_owner(room_id=r["team"]["roomId"], user_id=uid)
         else:
             self.validate(self.api.teams_create(name=course, team_type=1, room={"readOnly": True}))
+            
+        for admin, info in auth.get_admins().items():
+            self.add_owner(course, admin, info["name"])
 
     def remove_course(self, course: str):
         ids = self.get_team_room_ids(course)

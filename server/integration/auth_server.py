@@ -29,6 +29,18 @@ class Auth:
         except RequestException:
             return None
 
+    @staticmethod
+    def get_admins():
+        try:
+            r = requests.get(f"{Env.get('AUTH_LOCAL_URL')}/api/admins", headers={
+                "Authorization": Env.get('AUTH_API_KEY')
+            })
+            if r.status_code == 404:
+                return None
+            return r.json()
+        except RequestException:
+            return None
+
     def is_admin(self, user: str):
         user = self.get_user_info(user)
         return user is not None and user == "admin"
