@@ -76,7 +76,6 @@ You need to make sure that none of the above files are affected by *any* of the 
 def post_receive():
     try:
         data = json.loads(request.get_data().decode("utf-8").replace("\n", ","))
-        print(data)
     except:
         return "", 200
 
@@ -91,7 +90,6 @@ def post_receive():
     files = [file for file in data["files"].split(",") if file]
 
     course = Course.from_str(owner)
-    print(str(course))
     if course is None:
         return "", 200
 
@@ -99,7 +97,6 @@ def post_receive():
         return "", 200
 
     role = course.get_role(username)
-    print(role)
 
     if role is None:
         return "", 200
