@@ -5,6 +5,7 @@ from flask import Flask
 from werkzeug.security import gen_salt
 
 from server.database import database
+from server.env import Env
 from server.error_handling import error_handling
 from server.oauth import init_oauth
 from server.routing.admin.admin import admin_bp
@@ -26,7 +27,7 @@ def create_app():
     app.config.update(os.environ)
 
     # some dynamic settings
-    app.config["SECRET_KEY"] = gen_salt(32)
+    app.config["SECRET_KEY"] = Env.get("API_KEY")
     app.config["SESSION_PERMANENT"] = True
     app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(days=100)
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
