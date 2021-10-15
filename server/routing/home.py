@@ -22,11 +22,6 @@ def bootstrap():
     return home_bp.send_static_file('bootstrap.min.css')
 
 
-@home_bp.route('/static/bootstrap.min.css.map')
-def bootstrap_map():
-    return "not available", 404
-
-
 @home_bp.route('/static/logo.svg')
 def logo():
     return home_bp.send_static_file('logo.svg')
