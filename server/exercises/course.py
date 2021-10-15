@@ -510,7 +510,7 @@ class Course:
             spent = float(match)
         except ValueError:
             return None
-        return round(spent)
+        return spent
 
     def get_points(self, exercise: str, student: str):
         ex = self.get_student_exercise(exercise, student)
