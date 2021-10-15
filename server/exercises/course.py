@@ -416,10 +416,12 @@ class Course:
             [student_exercise for student_exercise in student_exercises if round(student_exercise.points) == points]
         )
 
-    def get_student_exercises_stats(self, student: str, include_ungraded: bool = False, return_exercises=False,
+    def get_student_exercises_stats(self, student: str, include_ungraded: bool = False,
+                                    include_time_spent: bool = False, return_exercises=False,
                                     exercises=None):
         # ugly code but less db queries ;)
         res = dict()
+        now = datetime.now()
         if exercises is None:
             exercises = self.exercises
         student_exercises = self.get_student_exercises(student)
@@ -450,6 +452,11 @@ class Course:
                     "max_points": exercise.points,
                     "tutor": None
                 }
+            if include_time_spent:
+                if exercise.end < now:
+                    res["exercises"][exercise.name]["time_spent"] = self.get_time_spent(exercise.name, student)
+                else:
+                    res["exercises"][exercise.name]["time_spent"] = None
 
         res["total"] = total
         res["max_total"] = max_total
@@ -460,24 +467,17 @@ class Course:
 
         return res
 
-    def get_time_spent(self, exercise: str):
-        res = {}
-        for student in self.student_names:
-            notes = gitea_exercises.get_notes(str(self), exercise, student)
-            matches = re.findall(r"Zeitbedarf: (\d+[,.]?\d*) h", notes)
-            if len(matches) != 1:
-                continue
-            match = matches[0]
-            try:
-                spent = float(match)
-            except ValueError:
-                continue
-            spent = round(spent)
-            if spent in res:
-                res[spent] += 1
-            else:
-                res[spent] = 1
-        return res
+    def get_time_spent(self, exercise: str, student: str):
+        notes = gitea_exercises.get_notes(str(self), exercise, student)
+        matches = re.findall(r"Zeitbedarf: *(\d+[,.]?\d*) *h", notes)
+        if len(matches) != 1:
+            return None
+        match = matches[0]
+        try:
+            spent = float(match)
+        except ValueError:
+            return None
+        return round(spent)
 
     def get_points(self, exercise: str, student: str):
         ex = self.get_student_exercise(exercise, student)

@@ -101,6 +101,7 @@ def stats(course):
 
     res = dict()
     include_ungraded = "include_ungraded" in request.args
+    include_time_spent = "include_time_spent" in request.args
 
     exercises = course.exercises
     users = auth.get_users()
@@ -109,6 +110,7 @@ def stats(course):
         res[student.username] = {
             "matrikelnummer": users[student.username]["matrikelnummer"] if student.username in users else None,
             **course.get_student_exercises_stats(student.username, exercises=exercises,
-                                                 include_ungraded=include_ungraded)
+                                                 include_ungraded=include_ungraded,
+                                                 include_time_spent=include_time_spent)
         }
     return jsonify(res)
