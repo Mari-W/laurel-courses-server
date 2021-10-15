@@ -416,12 +416,50 @@ class Course:
             [student_exercise for student_exercise in student_exercises if round(student_exercise.points) == points]
         )
 
-    def get_student_exercises_stats(self, student: str, include_ungraded: bool = False,
-                                    include_time_spent: bool = False, return_exercises=False,
+    def get_exercise_stats(self, exercise: str, include_time_spent: bool = True, include_ungraded: bool = True):
+        now = datetime.now()
+        res = dict()
+        exercise = self.get_exercise(exercise)
+        student_exercises = self.get_student_exercises_by_exercise(exercise.name)
+
+        def _find_student_exercise(student: str):
+            m = [student_exercise for student_exercise in student_exercises if
+                 student_exercise.student == student]
+            return m[0] if m else None
+
+        res["students"] = {}
+        res["exercise"] = {
+            "name": exercise.name,
+            "points": exercise.points,
+            "start": str(exercise.start),
+            "end": str(exercise.end),
+        }
+
+        for student in self.student_names:
+            student_exercise = _find_student_exercise(student)
+            if student_exercise is None and include_ungraded:
+                res["students"][student] = {
+                    "points": 0,
+                    "tutor": None
+                }
+            else:
+                res["students"][student] = {
+                    "points": student_exercise.points,
+                    "tutor": student_exercise.tutor
+                }
+
+            if include_time_spent and student in res["students"]:
+                if exercise.end < now and student_exercise is not None:
+                    res["students"][student]["time_spent"] = self.get_time_spent(exercise.name, student)
+                else:
+                    res["students"][student]["time_spent"] = None
+        return res
+
+    def get_student_exercises_stats(self, student: str, include_ungraded: bool = True,
+                                    return_exercises=False,
                                     exercises=None):
         # ugly code but less db queries ;)
         res = dict()
-        now = datetime.now()
         if exercises is None:
             exercises = self.exercises
         student_exercises = self.get_student_exercises(student)
@@ -452,11 +490,6 @@ class Course:
                     "max_points": exercise.points,
                     "tutor": None
                 }
-            if include_time_spent:
-                if exercise.end < now:
-                    res["exercises"][exercise.name]["time_spent"] = self.get_time_spent(exercise.name, student)
-                else:
-                    res["exercises"][exercise.name]["time_spent"] = None
 
         res["total"] = total
         res["max_total"] = max_total

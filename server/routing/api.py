@@ -110,7 +110,23 @@ def stats(course):
         res[student.username] = {
             "matrikelnummer": users[student.username]["matrikelnummer"] if student.username in users else None,
             **course.get_student_exercises_stats(student.username, exercises=exercises,
-                                                 include_ungraded=include_ungraded,
-                                                 include_time_spent=include_time_spent)
+                                                 include_ungraded=include_ungraded)
         }
     return jsonify(res)
+
+
+@api_bp.route("/course/<course>/exercise/<exercise>/stats", methods=["GET"])
+@admin_route
+def exercise_stats(course, exercise):
+    course = Course.from_str(course)
+    if not course:
+        return "course not found", 404
+    exercise = course.get_exercise(exercise)
+    if not exercise:
+        return "exercise not found", 404
+
+    include_ungraded = "include_ungraded" in request.args
+    include_time_spent = "include_time_spent" in request.args
+
+    return jsonify(course.get_exercise_stats(exercise.name, include_ungraded=include_ungraded,
+                                             include_time_spent=include_time_spent))
