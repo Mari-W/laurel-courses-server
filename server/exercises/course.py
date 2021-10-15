@@ -431,8 +431,8 @@ class Course:
         res["exercise"] = {
             "name": exercise.name,
             "points": exercise.points,
-            "start": str(exercise.start),
-            "end": str(exercise.end),
+            "start": exercise.start.isoformat(),
+            "end": exercise.end.isoformat(),
         }
 
         for student in self.student_names:
