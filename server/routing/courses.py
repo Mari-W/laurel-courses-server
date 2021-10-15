@@ -91,7 +91,7 @@ def exercises(course, student):
         elif exercise.start > now:
             return f"from {exercise.start.strftime('%d.%m.%y %H:%M')} to {exercise.end.strftime('%d.%m.%y %H:%M')}"
 
-    (exercises, student_stats) = course.get_student_exercises_stats(student, return_exercises=True)
+    (exercises, student_stats) = course.get_student_exercises_stats(student, return_exercises=True, include_ungraded=False)
     return cors(jsonify({
         "percentage": student_stats["percentage"],
         "total": student_stats["total"],
