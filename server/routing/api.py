@@ -91,6 +91,14 @@ def is_tutor(course, tutor):
 #     mpl.savefig(buf, format="png")
 #     return Response(buf.getvalue(), mimetype='image/png')
 
+@api_bp.route("/course/<course>/exercises", methods=["GET"])
+@admin_route
+def exercises(course):
+    course = Course.from_str(course)
+    if not course:
+        return "course not found", 404
+    return jsonify([exercise.to_dict() for exercise in course.finished_exercises])
+
 
 @api_bp.route("/course/<course>/exercises/stats", methods=["GET"])
 @admin_route
@@ -101,7 +109,6 @@ def stats(course):
 
     res = dict()
     include_ungraded = "include_ungraded" in request.args
-    include_time_spent = "include_time_spent" in request.args
 
     exercises = course.exercises
     users = auth.get_users()
