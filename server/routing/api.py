@@ -97,7 +97,9 @@ def exercises(course):
     course = Course.from_str(course)
     if not course:
         return "course not found", 404
-    return jsonify([exercise.to_dict() for exercise in course.finished_exercises])
+
+    return jsonify([{"name": exercise.name, "points": exercise.points, "start": exercise.start.isoformat(),
+                     "end": exercise.end.isoformat()} for exercise in course.finished_exercises])
 
 
 @api_bp.route("/course/<course>/exercises/stats", methods=["GET"])
