@@ -442,7 +442,7 @@ class Course:
                     "points": 0,
                     "tutor": None
                 }
-            else:
+            elif student_exercises is not None:
                 res["students"][student] = {
                     "points": student_exercise.points,
                     "tutor": student_exercise.tutor
