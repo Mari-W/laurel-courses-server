@@ -53,7 +53,7 @@ class Rocket:
                                                  members=[{"userId": uid, "roles": ["moderator"]}]))
 
             for rid in self.get_team_room_ids(course):
-                self.validate(self.api.channels_add_moderator(room_id=rid, user_id=uid))
+                self.validate(self.api.channels_add_moderator(room_id=rid, user_id=uid), ignore_failure=True)
 
             # self.validate(self.api.users_update(user_id=uid, name=name))
 
