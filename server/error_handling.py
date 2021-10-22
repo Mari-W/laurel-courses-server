@@ -14,7 +14,7 @@ if Env.get_bool("TELEGRAM_LOGGING", required=False):
 
 def error_handling(app):
     @app.errorhandler(NotFound)
-    def all_exception_handler(_):
+    def not_found(_):
         return "this route does not exist", 404
 
     @app.errorhandler(MismatchingStateError)
