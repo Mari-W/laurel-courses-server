@@ -416,7 +416,7 @@ class Course:
             [student_exercise for student_exercise in student_exercises if round(student_exercise.points) == points]
         )
 
-    def get_exercise_stats(self, exercise: str, include_time_spent: bool = True, include_ungraded: bool = True):
+    def get_exercise_stats(self, exercise: str, include_time_spent: bool = True):
         now = datetime.now()
         res = dict()
         exercise = self.get_exercise(exercise)
@@ -427,32 +427,30 @@ class Course:
                  student_exercise.student == student]
             return m[0] if m else None
 
-        res["students"] = {}
         res["exercise"] = {
             "name": exercise.name,
             "points": exercise.points,
             "start": exercise.start.isoformat(),
             "end": exercise.end.isoformat(),
         }
-
-        for student in self.student_names:
-            student_exercise = _find_student_exercise(student)
-            if student_exercise is None and include_ungraded:
-                res["students"][student] = {
-                    "points": 0,
-                    "tutor": None
-                }
-            elif student_exercise is not None:
-                res["students"][student] = {
-                    "points": student_exercise.points,
-                    "tutor": student_exercise.tutor
-                }
-
-            if include_time_spent and student in res["students"]:
-                if exercise.end < now and student_exercise is not None:
-                    res["students"][student]["time_spent"] = self.get_time_spent(exercise.name, student)
+        if exercise.end < now:
+            res["students"] = {}
+            for student in self.student_names:
+                student_exercise = _find_student_exercise(student)
+                if student_exercise is None:
+                    res["students"][student] = {
+                        "points": None,
+                        "tutor": None
+                    }
                 else:
-                    res["students"][student]["time_spent"] = None
+                    res["students"][student] = {
+                        "points": student_exercise.points,
+                        "tutor": student_exercise.tutor
+                    }
+
+                if include_time_spent:
+                    res["students"][student]["time_spent"] = self.get_time_spent(exercise.name, student)
+
         return res
 
     def get_student_exercises_stats(self, student: str, include_ungraded: bool = True,

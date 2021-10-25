@@ -137,5 +137,4 @@ def exercise_stats(course, exercise):
     include_ungraded = "include_ungraded" in request.args
     include_time_spent = "include_time_spent" in request.args
 
-    return jsonify(course.get_exercise_stats(exercise.name, include_ungraded=include_ungraded,
-                                             include_time_spent=include_time_spent))
+    return jsonify(course.get_exercise_stats(exercise.name, include_time_spent=include_time_spent))
