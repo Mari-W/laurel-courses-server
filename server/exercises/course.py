@@ -500,6 +500,8 @@ class Course:
 
     def get_time_spent(self, exercise: str, student: str):
         notes = gitea_exercises.get_notes(str(self), exercise, student)
+        if not notes:
+            return None
         matches = re.findall(r"Zeitbedarf: *(\d+[,.]?\d*) *h", notes)
         if len(matches) != 1:
             return None
