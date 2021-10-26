@@ -371,6 +371,7 @@ class Course:
                             readme.write("```bash")
                             readme.write("\n")
                             readme.write("\n".join([log for log in step["logs"] if log]))
+                            readme.write("\n")
                             readme.write("```")
 
     def grade_no_submission(self):
@@ -388,7 +389,7 @@ class Course:
                                     first_line = first_line.replace("??", "0")
                                     readme.write(f"{first_line}\n")
                                     readme.write("No submission.\n")
-                                    readme.write("This exercise was graded as no submission automatically.\n")
+                                    readme.write("This exercise was graded as 'no submission' automatically.\n")
                                     readme.write("If you believe this is an error, contact your tutor.\n")
 
     def validate_readmes(self):
