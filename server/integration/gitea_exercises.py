@@ -241,7 +241,10 @@ class GiteaExercises:
     def get_notes(self, course: str, exercise: str, student: str):
         try:
             file = self.repo_api.repo_get_contents(owner=course, repo=student, filepath=f"{exercise}/NOTES.md")
-            return base64.b64decode(file.content.encode("utf-8")).decode("utf-8")
+            try:
+                return base64.b64decode(file.content.encode("utf-8")).decode("utf-8")
+            except UnicodeDecodeError:
+                return None
         except ApiException as e:
             if e.status != 404:
                 raise e
