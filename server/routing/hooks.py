@@ -120,7 +120,7 @@ def post_receive():
                 matches = re.findall(r"(\d+[,.]?\d*) */ *(\d+[,.]?\d*)", first_line)
                 # no or too many point expressions
                 if not matches or len(matches) > 1:
-                    return "", 200
+                    continue
 
                 match = matches[0]
                 points, _ = float(match[0].replace(",", ".")), float(match[1].replace(",", "."))
