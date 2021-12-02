@@ -70,10 +70,10 @@ class Store:
 
     def __post_init__(self):
         if os.path.isfile(self.__file):
-            with open(self.__file, "r") as f:
+            with open(self.__file, "r", encoding="utf-8") as f:
                 self.__body = json.load(f)
         else:
-            with open(self.__file, "w") as f:
+            with open(self.__file, "w", encoding="utf-8") as f:
                 f.write("{}")
                 self.__body = {}
 
@@ -85,7 +85,7 @@ class Store:
 
     def __setitem__(self, key, value):
         self.__body[key] = value
-        with open(self.__file, "w") as f:
+        with open(self.__file, "w", encoding="utf-8") as f:
             f.write(json.dumps(self.__body))
 
 
@@ -178,7 +178,7 @@ class Updater:
                     print("Please contact server administrator.")
                     return
                 # inplace update, python magic
-                with open(__file__, "w") as file:
+                with open(__file__, "w", encoding="utf-8") as file:
                     file.write(r.text)
                 print("Update successful.")
                 # restart with same arguments, as applied on this script call
@@ -353,10 +353,10 @@ class Course:
             for exercise in self.finished_exercises:
                 readme_path = f"{COURSE}/{student}/{exercise}/README.md"
                 if os.path.isfile(readme_path):
-                    with open(readme_path, "r") as readme:
+                    with open(readme_path, "r", encoding="utf-8") as readme:
                         if any(["## Build" in line for line in readme.readlines()]):
                             continue
-                    with open(readme_path, "a") as readme:
+                    with open(readme_path, "a", encoding="utf-8") as readme:
                         build = self.get_build(student, exercise)
                         if not build:
                             readme.write("\n")
@@ -381,11 +381,11 @@ class Course:
                 if os.path.isdir(exercise_path):
                     files = next(os.walk(f"{COURSE}/{student}/{exercise}"))[2]
                     if files == ["README.md"] or files == ["README.md", "NOTES.md"]:
-                        with open(f"{exercise_path}/README.md", "r") as readme:
+                        with open(f"{exercise_path}/README.md", "r", encoding="utf-8") as readme:
                             first_line = readme.readline()
                             matches = re.findall(r"\?\? */ *(\d+[,.]?\d*)", first_line)
                             if matches:
-                                with open(f"{exercise_path}/README.md", "w") as readme:
+                                with open(f"{exercise_path}/README.md", "w", encoding="utf-8") as readme:
                                     first_line = first_line.replace("??", "0")
                                     readme.write(f"{first_line}\n")
                                     readme.write("No submission.\n")
@@ -399,7 +399,7 @@ class Course:
                     or elements[2] not in self.finished_exercises:
                 continue
 
-            with open(path, "r") as readme:
+            with open(path, "r", encoding="utf-8") as readme:
                 matches = re.findall(r"(\d+[,.]?\d*) */ *(\d+[,.]?\d*)", readme.readline())
                 if len(matches) == 0:
                     print(f"Found no valid point schema in {path}")
