@@ -11,7 +11,10 @@ from server.integration.auth_server import auth
 
 @dataclass
 class Rocket:
-    api = RocketChat(Env.get("ROCKET_USER"), Env.get("ROCKET_PASSWORD"), server_url=Env.get("ROCKET_URL"))
+    
+    @property
+    def api():
+        return RocketChat(Env.get("ROCKET_USER"), Env.get("ROCKET_PASSWORD"), server_url=Env.get("ROCKET_URL"))
 
     def add_course(self, course: str, options: CreateCourseOption):
         uid = self.get_user_id(options.owner)
@@ -103,7 +106,7 @@ class Rocket:
     def validate(response, ignore_failure=False):
         if response.status_code != 200 and not ignore_failure:
             raise RequestException(f"{response.status_code}: {response.text}")
-        elif not response.json()["success"] and not ignore_failure:
+        elif not response.json().get("success", False) and not ignore_failure:
             raise RequestException(response.text)
         return response.json()
 
