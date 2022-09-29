@@ -11,9 +11,9 @@ from server.integration.auth_server import auth
 
 @dataclass
 class Rocket:
-    
+
     @property
-    def api():
+    def api(self):
         return RocketChat(Env.get("ROCKET_USER"), Env.get("ROCKET_PASSWORD"), server_url=Env.get("ROCKET_URL"))
 
     def add_course(self, course: str, options: CreateCourseOption):
