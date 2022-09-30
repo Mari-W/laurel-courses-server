@@ -150,18 +150,17 @@ def exercise_tables(course):
     now = datetime.now()
     md = f"# {course.name}: Exercise Stats\n\n" 
     for exercise in course.finished_exercises:
-        end = datetime.fromisoformat(exercise["end"])
-        if end < now:
+        if exercise.end < now:
             res = course.get_exercise_stats(exercise.name, include_time_spent=True)
             students_points = [v["points"] for v in res["students"].values() if
                            "points" in v and v["points"] and "tutor" in v and v["tutor"]]
         if students_points:
-            points_table.add_row(exercise['name'], students_points)
+            points_table.add_row(exercise.name, students_points)
 
         students_time_spent = [v["time_spent"] for v in res["students"].values() if
                                "time_spent" in v and v["time_spent"]]
         if students_time_spent:
-            time_spent_table.add_row(exercise['name'], students_time_spent)
+            time_spent_table.add_row(exercise.name, students_time_spent)
 
         try:
             s = points_table.to_table().to_markdown_str(formatter=points_table.formatter())
