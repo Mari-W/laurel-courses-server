@@ -176,5 +176,5 @@ def exercise_tables(course):
     except ZeroDivisionError:
         pass
 
-    return f"<span style=\"display:block\" markdown=\"1\">{md}</span>", 200
+    return md.replace("\n", "<br>"), 200
 
