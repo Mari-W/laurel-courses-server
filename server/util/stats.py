@@ -20,7 +20,7 @@ Author: Hannes Saffrich
 
 from dataclasses import dataclass, field
 from typing import Optional
-from table import Table, ColLabels, align_right, align_left
+from server.util.table import Table, ColLabels, align_right, align_left
 
 
 @dataclass
