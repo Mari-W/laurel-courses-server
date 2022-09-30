@@ -2,13 +2,13 @@
 Author: Hannes Saffrich
 """
 from dataclasses import dataclass
-from typing import Callable, Any, Tuple
 from collections.abc import Iterator
 from io import StringIO
 import csv
+from typing import Any
 
 
-def drop(n: int, xs: Iterator[Any]) -> Iterator[Any]:
+def drop(n: int, xs):
     for x in xs:
         if n > 0:
             n -= 1
@@ -39,25 +39,25 @@ ColLabels = Labels(rows=False, cols=True)
 AllLabels = Labels(rows=True, cols=True)
 
 
-def map_cells(f, cells: Iterator[Iterator[Any]]) -> Iterator[Iterator[Any]]:
+def map_cells(f, cells):
     return ((f(x) for x in xs) for xs in cells)
 
 
-def imap_rows(f, rows: Iterator[Iterator[Any]]) -> Iterator[Iterator[Any]]:
+def imap_rows(f, rows):
     return ((f(c, r, cell) for c, cell in enumerate(row)) for r, row in enumerate(rows))
 
 
-def imap_cols(f, cols: Iterator[Iterator[Any]]) -> Iterator[Iterator[Any]]:
+def imap_cols(f, cols):
     return ((f(c, r, cell) for r, cell in enumerate(col)) for c, col in enumerate(cols))
 
 
-Formatter = Callable[[int, int, Any], str]
-str_formatter: Formatter = lambda col_ix, row_ix, cell: str(cell)
 
-Align = Callable[[int, int, str], str]
-align_left: Align = lambda col_width, col_ix, s: align_l(col_width, s)
-align_right: Align = lambda col_width, col_ix, s: align_r(col_width, s)
-align_none: Align = lambda col_width, col_ix, s: s
+str_formatter = lambda col_ix, row_ix, cell: str(cell)
+
+
+align_left= lambda col_width, col_ix, s: align_l(col_width, s)
+align_right = lambda col_width, col_ix, s: align_r(col_width, s)
+align_none= lambda col_width, col_ix, s: s
 
 
 def delimiter_from_path(file_path):
@@ -88,7 +88,7 @@ class Table:
     _labels: Labels
     _rows: list[list[Cell]]
 
-    def __init__(self, labels: Labels, rows: Iterator[Iterator[Any]]):
+    def __init__(self, labels: Labels, rows):
         assert rows == [] or type(rows[0]) is list, "Invalid Table init: rows have to be lists of lists."
         self._labels = labels
         self._rows = [[Cell(val) for val in row] for row in rows]
@@ -99,10 +99,10 @@ class Table:
     def num_cols(self) -> int:
         return len(self._rows[0]) if self.num_rows() > 0 else 0
 
-    def size(self) -> Tuple[int, int]:
+    def size(self):
         return self.num_cols(), self.num_rows()
 
-    def _skip(self, labels: Labels = AllLabels) -> Tuple[int, int]:
+    def _skip(self, labels: Labels = AllLabels):
         rows = 0
         if not labels.cols and self._labels.cols:
             rows = 1
@@ -111,30 +111,30 @@ class Table:
             cols = 1
         return cols, rows
 
-    def irows(self, labels: Labels = AllLabels) -> Iterator[Tuple[int, Iterator[Tuple[int, Cell]]]]:
+    def irows(self, labels: Labels = AllLabels):
         c, r = self._skip(labels)
         return drop(r, ((ri, drop(c, enumerate(row))) for ri, row in enumerate(self._rows)))
 
-    def icols(self, labels: Labels = AllLabels) -> Iterator[Tuple[int, Iterator[Tuple[int, Cell]]]]:
+    def icols(self, labels: Labels = AllLabels):
         c, r = self._skip(labels)
         return ((i, ((j, row[i + c]) for j, row in drop(r, enumerate(self._rows))))
                 for i in range(c, self.num_cols()))
 
-    def rows(self, labels: Labels = AllLabels) -> Iterator[Iterator[Cell]]:
+    def rows(self, labels: Labels = AllLabels):
         c, r = self._skip(labels)
         return drop(r, (drop(c, row) for row in self._rows))
 
-    def cols(self, labels: Labels = AllLabels) -> Iterator[Iterator[Cell]]:
+    def cols(self, labels: Labels = AllLabels):
         c, r = self._skip(labels)
         return ((row[i + c] for row in drop(r, self._rows))
                 for i in range(0, self.num_cols()))
 
-    def col_labels(self) -> list[Cell]:
+    def col_labels(self):
         if not self._labels.cols:
             assert False
         return self._rows[0]
 
-    def labeled_rows(self) -> Iterator[dict]:
+    def labeled_rows(self):
         ls = self.col_labels()
         for row in self.rows(NoLabels):
             yield {l.val: c for l, c in zip(ls, row)}
@@ -144,7 +144,7 @@ class Table:
             if row[label].val == val:
                 return row
 
-    def col_by_label(self, label: str) -> Iterator[Cell]:
+    def col_by_label(self, label: str):
         if not self._labels.cols:
             assert False
         ix = self.col_labels().index(Cell(label))
@@ -163,18 +163,18 @@ class Table:
         )
 
     def col_widths(self,
-                   formatter: Formatter = str_formatter,
+                   formatter = str_formatter,
                    labels: Labels = AllLabels
-                   ) -> Iterator[int]:
+                   ):
         return (max(len(formatter(c, r, cell.val)) for r, cell in col) for c, col in self.icols(labels))
 
     # Writing to String
 
     def to_str_rows(self,
-                    formatter: Formatter = str_formatter,
-                    align: Align = align_left,
+                    formatter = str_formatter,
+                    align = align_left,
                     labels: Labels = AllLabels
-                    ) -> Iterator[Iterator[str]]:
+                    ):
         col_widths = list(self.col_widths(formatter, labels))
         return ((align(col_width, c, formatter(c, r, cell.val))
                  for col_width, (c, cell) in zip(col_widths, row))
@@ -182,17 +182,17 @@ class Table:
 
     def to_str_lines(self,
                      col_spacing: int = 2,
-                     formatter: Formatter = str_formatter,
-                     align: Align = align_left,
+                     formatter = str_formatter,
+                     align = align_left,
                      labels: Labels = AllLabels
-                     ) -> Iterator[str]:
+                     ):
         sp = ' ' * col_spacing
         return (sp.join(row) for row in self.to_str_rows(formatter, align, labels))
 
     def to_str(self,
                col_spacing: int = 2,
-               formatter: Formatter = str_formatter,
-               align: Align = align_left,
+               formatter = str_formatter,
+               align = align_left,
                labels: Labels = AllLabels
                ) -> str:
         return '\n'.join(self.to_str_lines(col_spacing, formatter, align, labels))
@@ -217,15 +217,15 @@ class Table:
         return Table.from_csv_fd(labels, StringIO(s), delimiter, quotechar)
 
     @staticmethod
-    def from_csv_lines(labels: Labels, lines: Iterator[str], delimiter: str = ',', quotechar: str = '"') -> 'Table':
+    def from_csv_lines(labels: Labels, lines, delimiter: str = ',', quotechar: str = '"') -> 'Table':
         return Table.from_csv_str(labels, '\n'.join(lines), delimiter, quotechar)
 
     # Writing to CSV
 
     def to_csv_fd(self,
                   fd,
-                  formatter: Formatter = str_formatter,
-                  labels: Labels = AllLabels,
+                  formatter = str_formatter,
+                  labels = AllLabels,
                   delimiter: str = ',',
                   quotechar: str = '"'
                   ):
@@ -239,7 +239,7 @@ class Table:
             w.writerow(row)
 
     def to_csv_str(self,
-                   formatter: Formatter = str_formatter,
+                   formatter = str_formatter,
                    labels: Labels = AllLabels,
                    delimiter: str = ',',
                    quotechar: str = '"'
@@ -250,7 +250,7 @@ class Table:
 
     def to_csv_file(self,
                     path: str,
-                    formatter: Formatter = str_formatter,
+                    formatter = str_formatter,
                     labels: Labels = AllLabels,
                     delimiter: str = ',',
                     quotechar: str = '"'
@@ -261,10 +261,10 @@ class Table:
     # Writing to Github Markdown
     # TODO Github Markdown has alignment annotations
     def to_markdown_lines(self,
-                          formatter: Formatter = str_formatter,
-                          align: Align = align_left,
+                          formatter = str_formatter,
+                          align = align_left,
                           labels: Labels = AllLabels
-                          ) -> Iterator[str]:
+                          ):
         align2 = lambda col_width, col_ix, s: align(max(col_width, 3), col_ix, s)
         rows = self.to_str_rows(formatter, align2, labels)
         col_widths = self.col_widths(formatter, labels)
@@ -278,16 +278,16 @@ class Table:
             yield '| ' + ' | '.join(row) + ' |'
 
     def to_markdown_str(self,
-                        formatter: Formatter = str_formatter,
-                        align: Align = align_left,
+                        formatter = str_formatter,
+                        align = align_left,
                         labels: Labels = AllLabels
-                        ) -> Iterator[str]:
+                        ):
         return '\n'.join(self.to_markdown_lines(formatter, align, labels))
 
     def to_markdown_file(self,
                          path: str,
-                         formatter: Formatter = str_formatter,
-                         align: Align = align_left,
+                         formatter = str_formatter,
+                         align = align_left,
                          labels: Labels = AllLabels
                          ):
         with open(path, 'w', newline='') as f:
