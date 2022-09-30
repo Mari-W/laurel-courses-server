@@ -52,7 +52,7 @@ class Stats:
         )
 
     @staticmethod
-    def labels() -> list[str]:
+    def labels():
         return [
             "Minimum",
             "Quartile 1",
@@ -65,7 +65,7 @@ class Stats:
             "Samples",
         ]
 
-    def fields(self) -> list[float]:
+    def fields(self):
         return [
             self.minimum,
             self.quartile1,
@@ -81,12 +81,12 @@ class Stats:
 
 @dataclass
 class StatsTable:
-    stats: list[(str, Stats)] = field(default_factory=list)
+    stats: list = field(default_factory=list)
     key_heading: str = "Name"
     has_total_row: bool = True
-    total_row: list[float] = field(default_factory=list)
+    total_row: list = field(default_factory=list)
 
-    def add_row(self, name: str, it: list[float]):
+    def add_row(self, name: str, it: list):
         if self.has_total_row:
             start_ix = len(self.total_row)
             for x in it:
