@@ -1,6 +1,6 @@
 # from io import BytesIO
 
-import datetime
+from datetime import datetime
 from flask import Blueprint, jsonify, request
 
 from server.exercises.course import Course
