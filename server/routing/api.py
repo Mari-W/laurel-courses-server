@@ -162,18 +162,19 @@ def exercise_tables(course):
         if students_time_spent:
             time_spent_table.add_row(exercise.name, students_time_spent)
 
-        try:
-            s = points_table.to_table().to_markdown_str(formatter=points_table.formatter())
-            md += "### Point Distribution\n\n"
-            md += s + "\n"
-        except ZeroDivisionError:
-            pass
+    try:
+        s = points_table.to_table().to_markdown_str(formatter=points_table.formatter())
+        md += "### Point Distribution\n\n"
+        md += s + "\n"
+    except ZeroDivisionError:
+         pass
 
-        try:
-            s = time_spent_table.to_table().to_markdown_str(formatter=time_spent_table.formatter())
-            md += "### Time Distribution\n\n"
-            md += s + "\n"
-        except ZeroDivisionError:
-            pass
+    try:
+        s = time_spent_table.to_table().to_markdown_str(formatter=time_spent_table.formatter())
+        md += "### Time Distribution\n\n"
+        md += s + "\n"
+    except ZeroDivisionError:
+        pass
+    
     return md, 200
 
