@@ -2,7 +2,6 @@
 Author: Hannes Saffrich
 """
 from dataclasses import dataclass
-from collections.abc import Iterator
 from io import StringIO
 import csv
 from typing import Any
@@ -86,7 +85,7 @@ class Cell:
 @dataclass
 class Table:
     _labels: Labels
-    _rows: list[list[Cell]]
+    _rows: list
 
     def __init__(self, labels: Labels, rows):
         assert rows == [] or type(rows[0]) is list, "Invalid Table init: rows have to be lists of lists."
