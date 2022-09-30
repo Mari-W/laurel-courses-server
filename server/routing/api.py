@@ -175,6 +175,6 @@ def exercise_tables(course):
         md += s + "\n"
     except ZeroDivisionError:
         pass
-    
-    return md, 200
+
+    return f"<span style=\"display:block\" class=\"note\">{md}</span>", 200
 
