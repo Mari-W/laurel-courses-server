@@ -176,4 +176,5 @@ def exercise_tables(course):
             md += s + "\n"
         except ZeroDivisionError:
             pass
+    return md, 200
 
