@@ -1,10 +1,11 @@
 # from io import BytesIO
 
+import datetime
 from flask import Blueprint, jsonify, request
 
 from server.exercises.course import Course
 from server.integration.auth_server import auth
-# import matplotlib.pyplot as mpl
+from server.util.stats import StatsTable
 
 from server.routing.decorators import admin_route
 
@@ -134,7 +135,45 @@ def exercise_stats(course, exercise):
     if not exercise:
         return "exercise not found", 404
 
-    include_ungraded = "include_ungraded" in request.args
     include_time_spent = "include_time_spent" in request.args
 
     return jsonify(course.get_exercise_stats(exercise.name, include_time_spent=include_time_spent))
+
+@api_bp.route("/course/<course>/exercises/stats.md", methods=["GET"])
+@admin_route
+def exercise_tables(course):
+    course = Course.from_str(course)
+    if not course:
+        return "course not found", 404
+    points_table = StatsTable()
+    time_spent_table = StatsTable()
+    now = datetime.now()
+    md = f"# {course.name}: Exercise Stats\n\n" 
+    for exercise in course.finished_exercises:
+        end = datetime.fromisoformat(exercise["end"])
+        if end < now:
+            res = course.get_exercise_stats(exercise.name, include_time_spent=True)
+            students_points = [v["points"] for v in res["students"].values() if
+                           "points" in v and v["points"] and "tutor" in v and v["tutor"]]
+        if students_points:
+            points_table.add_row(exercise['name'], students_points)
+
+        students_time_spent = [v["time_spent"] for v in res["students"].values() if
+                               "time_spent" in v and v["time_spent"]]
+        if students_time_spent:
+            time_spent_table.add_row(exercise['name'], students_time_spent)
+
+        try:
+            s = points_table.to_table().to_markdown_str(formatter=points_table.formatter())
+            md += "### Point Distribution\n\n"
+            md += s + "\n"
+        except ZeroDivisionError:
+            pass
+
+        try:
+            s = time_spent_table.to_table().to_markdown_str(formatter=time_spent_table.formatter())
+            md += "### Time Distribution\n\n"
+            md += s + "\n"
+        except ZeroDivisionError:
+            pass
+
