@@ -165,7 +165,7 @@ def exercise_tables(course):
     try:
         s = points_table.to_table().to_markdown_str(formatter=points_table.formatter())
         md += "### Point Distribution\n\n"
-        md += s + "\n"
+        md += s + "\n\n"
     except ZeroDivisionError:
          pass
 
