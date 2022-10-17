@@ -39,7 +39,7 @@ def is_tutor(course, tutor):
         return "not a tutor", 404
     return "", 200
     
-@api_bp.route("/course/<course>/is_student/<tutor>", methods=["GET"])
+@api_bp.route("/course/<course>/is_student/<student>", methods=["GET"])
 @admin_route
 def is_student(course, student):
     course = Course.from_str(course)
