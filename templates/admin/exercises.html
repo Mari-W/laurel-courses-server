@@ -1,7 +1,7 @@
 {% include 'admin/nav.html' %}
 <a class="btn btn-success my-2 ms-2 btn-sm" href="/admin/exercises/{{ course }}/add">Add</a>
 <a class="btn btn-secondary my-2 ms-2 btn-sm" href="/api/course/{{ course }}/exercises/stats">Stats</a>
-
+<a class="btn btn-secondary my-2 ms-2 btn-sm" href="/api/course/{{ course }}/exercises/stats.md">stats.md</a>
 <table class="table table-borderless table-sm ms-2">
     <thead>
     <tr>
@@ -34,10 +34,6 @@
                     <div class="col">
                         <a class="btn btn-secondary btn-sm badge"
                            href="/api/course/{{ course }}/exercise/{{ exercise.name }}/stats">Stats</a>
-                    </div>
-                    <div class="col">
-                        <a class="btn btn-secondary btn-sm badge"
-                           href="/api/course/{{ course }}/exercise/{{ exercise.name }}/stats.md">stats.md</a>
                     </div>
                 </div>
             </td>
