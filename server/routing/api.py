@@ -38,59 +38,17 @@ def is_tutor(course, tutor):
     if not course.has_tutor(tutor):
         return "not a tutor", 404
     return "", 200
+    
+@api_bp.route("/course/<course>/is_student/<tutor>", methods=["GET"])
+@admin_route
+def is_student(course, student):
+    course = Course.from_str(course)
+    if not course:
+        return "course not found", 404
 
-
-# @api_bp.route("/course/<course>/exercise/<exercise>/points/graph", methods=["GET"])
-# @admin_route
-# def points(course, exercise):
-#     course = Course.from_str(course)
-#     if not course:
-#         return "course not found", 404
-#     exercise = course.get_exercise(exercise)
-#     if not exercise:
-#         return "exercise not found", 404
-#
-#     mpl.plot(
-#         list(range(round(exercise.points) + 1)),
-#         [course.get_students_with_points(points, exercise.name) for points in range(round(exercise.points) + 1)],
-#     )
-#     mpl.xlabel("Points")
-#     mpl.ylabel("Students")
-#     mpl.title(f"Points per Students in {exercise.name}")
-#     mpl.gcf().gca().yaxis.get_major_locator().set_params(integer=True)
-#     mpl.gcf().gca().xaxis.get_major_locator().set_params(integer=True)
-#
-#     buf = BytesIO()
-#     mpl.savefig(buf, format="png")
-#     return Response(buf.getvalue(), mimetype='image/png')
-#
-#
-# @api_bp.route("/course/<course>/exercise/<exercise>/time/graph", methods=["GET"])
-# @admin_route
-# def time(course, exercise):
-#     course = Course.from_str(course)
-#     if not course:
-#         return "course not found", 404
-#     exercise = course.get_exercise(exercise)
-#     if not exercise:
-#         return "exercise not found", 404
-#
-#     time_spent = course.get_time_spent(exercise.name)
-#     max_spent = max(time_spent.keys()) if len(time_spent.keys()) > 0 else 0
-#
-#     mpl.plot(
-#         list(range(max_spent + 1)),
-#         [time_spent[spent] if spent in time_spent else 0 for spent in list(range(max_spent + 1))],
-#     )
-#     mpl.xlabel("Time Spent (in hours, rounded)")
-#     mpl.ylabel("Students")
-#     mpl.title("Time Spent per Students")
-#     mpl.gcf().gca().yaxis.get_major_locator().set_params(integer=True)
-#     mpl.gcf().gca().xaxis.get_major_locator().set_params(integer=True)
-#
-#     buf = BytesIO()
-#     mpl.savefig(buf, format="png")
-#     return Response(buf.getvalue(), mimetype='image/png')
+    if not course.has_student(student):
+        return "not a student", 404
+    return "", 200
 
 @api_bp.route("/course/<course>/exercises", methods=["GET"])
 @admin_route
