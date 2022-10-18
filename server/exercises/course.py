@@ -140,19 +140,15 @@ class Course:
 
     def remove_student(self, student) -> Optional[str]:
         if self.has_student(student):
-            if try_except(lambda: rocket.remove_student(str(self), student)):
-                if try_except(lambda: gitea_exercises.remove_student(str(self), student),
-                              lambda: rocket.add_student(str(self), student)):
-                    self.unassign_tutor(student)
-                    with database:
-                        StudentEntity.query.delete_by(course=str(self), username=student)
-                        StudentExerciseEntity.query.delete_by(course=str(self), student=student)
-                else:
-                    return f"failed to remove {student} in gitea"
-            else:
-                return f"failed to remove {student} in rocket"
-        else:
-            return f"failed to remove {student}, not a student"
+            try:
+                rocket.remove_student(str(self), student)
+                gitea_exercises.remove_student(str(self), student)
+                self.unassign_tutor(student)
+                with database:
+                    StudentEntity.query.delete_by(course=str(self), username=student)
+                    StudentExerciseEntity.query.delete_by(course=str(self), student=student)
+            except:
+                pass
 
     def has_student(self, student: str):
         return StudentEntity.query.exists(course=str(self), username=student)
