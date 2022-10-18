@@ -142,11 +142,20 @@ class Course:
         if self.has_student(student):
             try:
                 rocket.remove_student(str(self), student)
+            except:
+                pass
+            try:
                 gitea_exercises.remove_student(str(self), student)
+            except:
+                pass
+            try:
                 self.unassign_tutor(student)
+            except:
+                pass
+            try:
                 with database:
-                    StudentEntity.query.delete_by(course=str(self), username=student)
-                    StudentExerciseEntity.query.delete_by(course=str(self), student=student)
+                        StudentEntity.query.delete_by(course=str(self), username=student)
+                        StudentExerciseEntity.query.delete_by(course=str(self), student=student)
             except:
                 pass
 
