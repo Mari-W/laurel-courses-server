@@ -380,7 +380,7 @@ class Course:
                 exercise_path = f"{COURSE}/{student}/{exercise}"
                 if os.path.isdir(exercise_path):
                     files = next(os.walk(f"{COURSE}/{student}/{exercise}"))[2]
-                    if files == ["README.md"] or files == ["README.md", "NOTES.md"]:
+                    if files == ["README.md"] or files == ["README.md", "NOTES.md"] or files == ["NOTES.md", "README.md"]:
                         with open(f"{exercise_path}/README.md", "r", encoding="utf-8") as readme:
                             first_line = readme.readline()
                             matches = re.findall(r"\?\? */ *(\d+[,.]?\d*)", first_line)
