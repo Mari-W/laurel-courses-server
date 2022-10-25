@@ -116,6 +116,9 @@ def post_receive():
                 if not exercise:
                     continue
                 readme = gitea_exercises.get_readme(str(course), exercise.name, repo)
+                if not readme:
+                    send_error(Exception(f"README file of student {path} is in invalid format or deleted."))
+                    continue
                 first_line = readme.split("\n")[0]
                 matches = re.findall(r"(\d+[,.]?\d*) */ *(\d+[,.]?\d*)", first_line)
                 # no or too many point expressions
