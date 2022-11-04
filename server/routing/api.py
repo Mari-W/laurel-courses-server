@@ -25,7 +25,7 @@ def tutors(course):
     if not course:
         return "course not found", 404
 
-    return jsonify([{**info, "students": course.get_tutor_student_names(info["username"])} for info in course.tutors])
+    return jsonify({tutor: course.get_tutor_student_names(tutor) for tutor in course.tutor_names})
 
 
 @api_bp.route("/course/<course>/is_tutor/<tutor>", methods=["GET"])
