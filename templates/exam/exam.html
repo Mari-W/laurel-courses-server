@@ -1,0 +1,35 @@
+{% with name="Exam" %}
+    {% include "header.html" %}
+{% endwith %}
+{% if info is not None %}            
+<div class="position-absolute top-50 start-50 translate-middle">
+  <div class="card rounded-3">
+      <h3 class="card-header">
+          EiP Exam Information
+      </h3>
+      <div class="card-body">
+        <pre class="card-text">
+            Each student is assigned a personalized time and place. Please make sure to show up at the correct time and correct place. If you fail to do so, you might be excluded from the exam.
+            Your personalized time and place will be: <br><br>
+            <strong>{{ info }}</strong>
+        </pre>
+      </div>
+      <div class="card-footer">If you feel like something might be wrong, write <a href="mailto:weidner@cs.uni-freiburg.de">an email!</a> immediately</div>
+  </div>
+</div>
+{% else %}
+<div class="position-absolute top-50 start-50 translate-middle">
+    <div class="card rounded-3">
+        <h3 class="card-header">
+            EiP Exam Information
+        </h3>
+        <div class="card-body">
+          <pre class="card-text">
+              Could not find any exam registration for this account.
+          </pre>
+        </div>
+        <div class="card-footer">If you feel like something might be wrong, immediately write <a href="mailto:weidner@cs.uni-freiburg.de">an email!</a></div>
+    </div>
+  </div>
+{% endif %}
+{% include "footer.html" %}

@@ -1,6 +1,7 @@
 from datetime import datetime
+import json
 
-from flask import Blueprint, redirect, jsonify, session, make_response
+from flask import Blueprint, redirect, jsonify, session, make_response, render_template
 from server.env import Env
 from server.exercises.course import Course
 from server.integration.gitea_exercises import gitea_exercises
@@ -8,6 +9,15 @@ from server.routing.auth import cors
 from server.routing.decorators import authorized_route
 
 courses_bp = Blueprint("courses", __name__)
+
+@courses_bp.route("/2022WS-EiP/exam", methods=["GET"])
+@authorized_route
+def exam():
+    user = session.get("user")
+    matnr = user["matrikelnummer"]
+    with open("../../templates/exam/dist.json", "r") as f:
+        return render_template("exam/exam.html", info=json.load(f).get(str(matnr)))
+
 
 
 @courses_bp.route("/list", methods=["GET"])
