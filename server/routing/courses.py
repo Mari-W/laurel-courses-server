@@ -15,7 +15,7 @@ courses_bp = Blueprint("courses", __name__)
 def exam():
     user = session.get("user")
     matnr = user["matrikelnummer"]
-    with open("../../templates/exam/dist.json", "r") as f:
+    with open("/app/templates/exam/dist.json", "r") as f:
         return render_template("exam/exam.html", info=json.load(f).get(str(matnr)))
 
 
