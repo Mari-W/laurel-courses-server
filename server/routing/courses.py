@@ -164,8 +164,11 @@ def scan(course):
     
     student = data["name"]
     if len(student) > 10:
+        print(student)
+        print(Env.get("FERNET_KEY"))
         f = Fernet(Env.get("FERNET_KEY").encode("utf-8"))
         student = f.decrypt(student)
+        print(student)
 
     course.add_participation(student, tutor["sub"])
 
