@@ -11,11 +11,12 @@
                     only use if qr does not work; manually add the student by rz account
                 </div>
             </div>
-
+            <button type="submit" class="btn btn-success">Submit</button>
+            <br>
             <script src="https://cdnjs.cloudflare.com/ajax/libs/qr-scanner/1.4.2/qr-scanner.umd.min.js"
                 integrity="sha512-a/IwksuXdv0Q60tVkQpwMk5qY+6cJ0FJgi33lrrIddoFItTRiRfSdU1qogP3uYjgHfrGY7+AC+4LU4J+b9HcgQ=="
                 crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-            <video id="qr"></video>
+            <video id="qr" style="width: 100%;"></video>
             <script>
                 function sleep(milliseconds) {
                     return new Promise(resolve => setTimeout(resolve, milliseconds));
@@ -26,15 +27,18 @@
                     result => {
                         document.getElementById("name").value = result.data
                         video.hidden = true
+                        scanner.stop()
                         setTimeout(function() {
                             document.getElementById('form').submit();
                         }, 1000)
                     },
-                    {},
+                    {
+                        highlightCodeOutline: true,
+                        maxScansPerSecond: 1
+                    },
                 );
                 scanner.start();
             </script>
-            <button type="submit" class="btn btn-success">Submit</button>
         </form>
     </div>
 </div>
