@@ -146,8 +146,8 @@ def scan(course):
     if not course:
         return "course not found", 500
 
-    tutor = session.get("user")["sub"]
-    if not course.has_tutor(tutor):
+    tutor = session.get("user")
+    if not (course.has_tutor(tutor["sub"]) or tutor["role"] == "admin"):
         return "unauthorized", 401
     
     if request.method == "GET":
@@ -167,7 +167,7 @@ def scan(course):
         f = Fernet(Env.get("FERNET_KEY").encode("utf-8"))
         student = f.decrypt(student)
 
-    course.add_participation(student, tutor)
+    course.add_participation(student, tutor["sub"])
 
     return redirect(request.url) 
         
