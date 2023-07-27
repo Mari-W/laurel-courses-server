@@ -1,18 +1,39 @@
 {% with name="Scan QR Code" %}
-    {% include "header.html" %}
+{% include "header.html" %}
 {% endwith %}
 <div class="card rounded-3 p-2 border-0 mt-2">
     <div class="card-body">
-        <form action="" method="post">
+        <form action="" method="post" id="form">
             <div class="mb-3">
                 <label for="name" class="form-label">RZ account</label>
-                <input type="text" class="form-control" id="name" name="name"
-                       aria-describedby="name_help" required>
-                <div id="name_help" class="form-text text-danger"> 
+                <input type="text" class="form-control" id="name" name="name" aria-describedby="name_help" required>
+                <div id="name_help" class="form-text text-danger">
                     only use if qr does not work; manually add the student by rz account
                 </div>
             </div>
 
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/qr-scanner/1.4.2/qr-scanner.umd.min.js"
+                integrity="sha512-a/IwksuXdv0Q60tVkQpwMk5qY+6cJ0FJgi33lrrIddoFItTRiRfSdU1qogP3uYjgHfrGY7+AC+4LU4J+b9HcgQ=="
+                crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+            <video id="qr"></video>
+            <script>
+                function sleep(milliseconds) {
+                    return new Promise(resolve => setTimeout(resolve, milliseconds));
+                }
+                const video = document.getElementById('qr');
+                const scanner = new QrScanner(
+                    video,
+                    result => {
+                        document.getElementById("name").value = result.data
+                        video.hidden = true
+                        setTimeout(function() {
+                            document.getElementById('form').submit();
+                        }, 1000)
+                    },
+                    {},
+                );
+                scanner.start();
+            </script>
             <button type="submit" class="btn btn-success">Submit</button>
         </form>
     </div>
