@@ -1,0 +1,20 @@
+{% with name="Scan QR Code" %}
+    {% include "header.html" %}
+{% endwith %}
+<div class="card rounded-3 p-2 border-0 mt-2">
+    <div class="card-body">
+        <form action="" method="post">
+            <div class="mb-3">
+                <label for="name" class="form-label">RZ account</label>
+                <input type="text" class="form-control" id="name" name="name"
+                       aria-describedby="name_help" required>
+                <div id="name_help" class="form-text text-danger"> 
+                    only use if qr does not work; manually add the student by rz account
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-success">Submit</button>
+        </form>
+    </div>
+</div>
+{% include "footer.html" %}

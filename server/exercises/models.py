@@ -96,3 +96,14 @@ class StudentExerciseEntity(database.Model):
     tutor = Column(String(64), nullable=False)
 
     points = Column(Float, nullable=True)
+
+class TutorialParticipation(database.Model):
+    __tablename__ = 'student_exercise'
+
+    id = Column(Integer, primary_key=True)
+
+    course = Column(String(128), nullable=False)
+    student = Column(String(64), nullable=False)
+    tutor = Column(String(64), nullable=False)
+
+    date = Column(DateTime, nullable=False)

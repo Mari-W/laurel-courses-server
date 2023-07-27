@@ -10,7 +10,7 @@ from sqlalchemy.exc import IntegrityError
 from server.database import database
 from server.error_handling import try_except, send_error
 from server.exercises.models import CourseEntity, StudentEntity, TutorEntity, TutorStudentEntity, ExerciseEntity, \
-    StudentExerciseEntity
+    StudentExerciseEntity, TutorialParticipation
 from server.exercises.options import CreateCourseOption, AddTutorOption, CreateExerciseOption
 from server.integration.auth_server import auth
 from server.integration.gitea_exercises import gitea_exercises
@@ -318,6 +318,15 @@ class Course:
             course=str(self)).group_by(TutorStudentEntity.tutor).all())
 
     # exercises
+
+    def add_participation(self, student: str, tutor: str):
+        with database as db:
+            db += TutorialParticipation(
+                course=str(self),
+                student=student,
+                tutor=tutor,
+                date=datetime.now()
+            )
 
     def add_exercise(self, exercise: str, options: CreateExerciseOption) -> Optional[str]:
         if not self.has_exercise(exercise):

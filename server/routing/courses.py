@@ -1,12 +1,15 @@
 from datetime import datetime
 import json
 
-from flask import Blueprint, redirect, jsonify, session, make_response, render_template
+from flask import Blueprint, redirect, jsonify, session, make_response, render_template, request
+from cryptography.fernet import Fernet
+
 from server.env import Env
 from server.exercises.course import Course
 from server.integration.gitea_exercises import gitea_exercises
 from server.routing.auth import cors
 from server.routing.decorators import authorized_route
+
 
 courses_bp = Blueprint("courses", __name__)
 
@@ -135,3 +138,38 @@ def join():
                      f'<a href="{Env.get("GITEA_URL")}">return to git</a>', 500
 
     return cors(redirect(f"{Env.get('GITEA_URL')}/{str(course)}/{student}"))
+
+@courses_bp.route("/scan", methods=["GET", "POST"])
+@authorized_route
+def scan():
+    course = Course.from_req()
+    if not course:
+        return "course not found", 500
+
+    tutor = session.get("user")["sub"]
+    if not course.has_tutor(tutor):
+        return "unauthorized", 401
+    
+    if request.method == "GET":
+        return render_template("qr/qr.html")
+    
+    # allow json requests
+    data = request.get_json(silent=True)
+
+    if not data:
+        data = request.form
+
+    if not "name" in data:
+        return "no student given", 500
+    
+    student = data["name"]
+    if len(student) > 10:
+        f = Fernet(Env.get("FERNET_KEY").encode("utf-8"))
+        student = f.decrypt(student)
+
+    course.add_participation(student, tutor)
+
+    return redirect(request.url) 
+        
+
+

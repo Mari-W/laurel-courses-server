@@ -1,12 +1,12 @@
 # OIDC provider lib
-Authlib
+Authlib~=0.15.5
 
 # web (Authlib only currently works with Flask 1.0, keep an eye on it)
 Flask~=1.0
 uWSGI
 
 # ORM & DB driver
-Flask-SQLAlchemy
+Flask-SQLAlchemy~=2.4.4
 SQLAlchemy~=1.4.23
 psycopg2
 
@@ -19,3 +19,5 @@ python-dotenv
 python-telegram-bot
 cachetools==4.2.2
 # matplotlib
+cryptography
+markupsafe==2.0.1
