@@ -98,7 +98,7 @@ class StudentExerciseEntity(database.Model):
     points = Column(Float, nullable=True)
 
 class TutorialParticipation(database.Model):
-    __tablename__ = 'student_exercise'
+    __tablename__ = 'tutorial_participation'
 
     id = Column(Integer, primary_key=True)
 
