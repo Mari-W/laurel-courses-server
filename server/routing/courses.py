@@ -139,10 +139,10 @@ def join():
 
     return cors(redirect(f"{Env.get('GITEA_URL')}/{str(course)}/{student}"))
 
-@courses_bp.route("/scan", methods=["GET", "POST"])
+@courses_bp.route("/<course>/scan", methods=["GET", "POST"])
 @authorized_route
-def scan():
-    course = Course.from_req()
+def scan(course):
+    course = Course.from_str(course)
     if not course:
         return "course not found", 500
 
