@@ -189,14 +189,14 @@ def scan(course):
         return "no student given", 500
 
     student = data["name"]
-    kwargs = {}
     if len(student) > 20:
         f = Fernet(Env.get("FERNET_KEY").encode("utf-8"))
         student = f.decrypt(student).decode("utf-8")
-        kwargs["success"] = student
-        if not course.has_student(student):
-            kwargs["warning"] = True
 
     course.add_participation(student, tutor["sub"])
 
-    return redirect(url_for(".scan", **kwargs))
+    return redirect(
+        f"/courses/{str(course)}/scan?student={student}" + ""
+        if not course.has_student(student)
+        else "warning=True"
+    )
