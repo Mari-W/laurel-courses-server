@@ -328,6 +328,9 @@ class Course:
                 date=datetime.now()
             )
 
+    def list_participation_by_tutor(self, tutor: str):
+        return TutorialParticipation.query.many(course=str(self), tutor=tutor)
+
     def add_exercise(self, exercise: str, options: CreateExerciseOption) -> Optional[str]:
         if not self.has_exercise(exercise):
             options.course_name = self.entity.display_name

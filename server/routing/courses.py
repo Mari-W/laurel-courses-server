@@ -177,7 +177,7 @@ def scan(course):
         return "unauthorized", 401
 
     if request.method == "GET":
-        return render_template("qr/qr.html")
+        return render_template("tutorial/scan.html")
 
     # allow json requests
     data = request.get_json(silent=True)
@@ -197,6 +197,22 @@ def scan(course):
 
     return redirect(
         f"/courses/{str(course)}/scan?student={student}" + ""
-        if not course.has_student(student)
+        if course.has_student(student)
         else "warning=True"
+    )
+
+
+@courses_bp.route("/<course>/scan", methods=["GET"])
+@authorized_route
+def scanned(course):
+    course = Course.from_str(course)
+    if not course:
+        return "course not found", 500
+
+    tutor = session.get("user")
+    if not (course.has_tutor(tutor["sub"]) or tutor["role"] == "admin"):
+        return "unauthorized", 401
+    
+    return render_template(
+        "tutorial/scanned.html", entries=course.list_participation_by_tutor(tutor["sub"])
     )
