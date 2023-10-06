@@ -32,9 +32,9 @@
                     return new Promise(resolve => setTimeout(resolve, milliseconds));
                 }
 
-                var url = new URL(window.location.href);
-                var hasWarning = url.searchParams.get("warning");
-                var student = url.searchParams.get("success");
+                const url = new URL(window.location.href);
+                const hasWarning = url.searchParams.get("warning");
+                const student = url.searchParams.get("student");
                 
                 if (hasWarning != null) {
                     document.getElementById("warning").classList.remove("invisible")
