@@ -1,7 +1,16 @@
 from datetime import datetime
 import json
 
-from flask import Blueprint, redirect, jsonify, session, make_response, render_template, request
+from flask import (
+    Blueprint,
+    redirect,
+    jsonify,
+    session,
+    make_response,
+    render_template,
+    request,
+    url_for,
+)
 from cryptography.fernet import Fernet
 
 from server.env import Env
@@ -13,6 +22,7 @@ from server.routing.decorators import authorized_route
 
 courses_bp = Blueprint("courses", __name__)
 
+
 @courses_bp.route("/2022WS-EiP/exam", methods=["GET"])
 @authorized_route
 def exam():
@@ -20,7 +30,6 @@ def exam():
     matnr = user["matrikelnummer"]
     with open("/app/templates/exam/dist.json", "r") as f:
         return render_template("exam/exam.html", info=json.load(f).get(str(matnr)))
-
 
 
 @courses_bp.route("/list", methods=["GET"])
@@ -36,16 +45,20 @@ def list_courses():
         gitea_exercises.make_admin(user)
         # drone.make_admin(username)
 
-    return cors(jsonify({
-        str(course): {
-            "role": course.get_role(username, is_admin=role == "admin"),
-            "open": course.is_open,
-            "restricted": course.is_restricted,
-            "display_name": course.entity.display_name,
-            "website": course.entity.website,
-        }
-        for course in Course.all_courses()
-    }))
+    return cors(
+        jsonify(
+            {
+                str(course): {
+                    "role": course.get_role(username, is_admin=role == "admin"),
+                    "open": course.is_open,
+                    "restricted": course.is_restricted,
+                    "display_name": course.entity.display_name,
+                    "website": course.entity.website,
+                }
+                for course in Course.all_courses()
+            }
+        )
+    )
 
 
 @courses_bp.route("/<course>/<student>/tutor", methods=["GET"])
@@ -104,21 +117,30 @@ def exercises(course, student):
         elif exercise.start > now:
             return f"from {exercise.start.strftime('%d.%m.%y %H:%M')} to {exercise.end.strftime('%d.%m.%y %H:%M')}"
 
-    (exercises, student_stats) = course.get_student_exercises_stats(student, return_exercises=True, include_ungraded=False)
-    return cors(jsonify({
-        "percentage": student_stats["percentage"],
-        "total": student_stats["total"],
-        "max_total": student_stats["max_total"],
-        "exercises": {
-            exercise.name: {
-                "finished": exercise.end < now,
-                "important_message": exercise.start < now < exercise.end,
-                "message": _msg(exercise),
-                "points": student_stats["exercises"][exercise.name]["points"]
-                if exercise.name in student_stats["exercises"] else None,
-                "max_points": exercise.points
-            } for exercise in exercises
-        }}))
+    (exercises, student_stats) = course.get_student_exercises_stats(
+        student, return_exercises=True, include_ungraded=False
+    )
+    return cors(
+        jsonify(
+            {
+                "percentage": student_stats["percentage"],
+                "total": student_stats["total"],
+                "max_total": student_stats["max_total"],
+                "exercises": {
+                    exercise.name: {
+                        "finished": exercise.end < now,
+                        "important_message": exercise.start < now < exercise.end,
+                        "message": _msg(exercise),
+                        "points": student_stats["exercises"][exercise.name]["points"]
+                        if exercise.name in student_stats["exercises"]
+                        else None,
+                        "max_points": exercise.points,
+                    }
+                    for exercise in exercises
+                },
+            }
+        )
+    )
 
 
 @courses_bp.route("/join", methods=["POST"])
@@ -134,10 +156,14 @@ def join():
     student = session.get("user")["sub"]
     err = course.add_student(student)
     if err:
-        return err + '. please contact server administrator. meanwhile you can ' \
-                     f'<a href="{Env.get("GITEA_URL")}">return to git</a>', 500
+        return (
+            err + ". please contact server administrator. meanwhile you can "
+            f'<a href="{Env.get("GITEA_URL")}">return to git</a>',
+            500,
+        )
 
     return cors(redirect(f"{Env.get('GITEA_URL')}/{str(course)}/{student}"))
+
 
 @courses_bp.route("/<course>/scan", methods=["GET", "POST"])
 @authorized_route
@@ -149,27 +175,28 @@ def scan(course):
     tutor = session.get("user")
     if not (course.has_tutor(tutor["sub"]) or tutor["role"] == "admin"):
         return "unauthorized", 401
-    
+
     if request.method == "GET":
         return render_template("qr/qr.html")
-    
+
     # allow json requests
     data = request.get_json(silent=True)
 
     if not data:
         data = request.form
 
-    if not "name" in data:
+    if "name" not in data:
         return "no student given", 500
-    
+
     student = data["name"]
-    if len(student) > 10:
+    kwargs = {}
+    if len(student) > 20:
         f = Fernet(Env.get("FERNET_KEY").encode("utf-8"))
         student = f.decrypt(student).decode("utf-8")
+        kwargs["success"] = student
+        if not course.has_student(student):
+            kwargs["warning"] = True
 
     course.add_participation(student, tutor["sub"])
 
-    return redirect(request.url) 
-        
-
-
+    return redirect(url_for("scan"), **kwargs)

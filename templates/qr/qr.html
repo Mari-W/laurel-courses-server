@@ -3,6 +3,12 @@
 {% endwith %}
 <div class="card rounded-3 p-2 border-0 mt-2">
     <div class="card-body">
+        <div id="warning" class="alert alert-warning invisible" role="alert" >
+            Student has not yet joined the course
+        </div>
+        <div id="success" class="alert alert-success invisible" role="alert" >
+            ..
+        </div>
         <form action="" method="post" id="form">
             <div class="mb-3">
                 <label for="name" class="form-label">RZ account</label>
@@ -25,6 +31,20 @@
                 function sleep(milliseconds) {
                     return new Promise(resolve => setTimeout(resolve, milliseconds));
                 }
+
+                var url = new URL(window.location.href);
+                var hasWarning = url.searchParams.get("warning");
+                var student = url.searchParams.get("success");
+                
+                if (hasWarning != null) {
+                    document.getElementById("warning").classList.remove("invisible")
+                }
+
+                if (student != null) {
+                    document.getElementById("success").innerText = "successfully scanned " + student
+                    document.getElementById("success").classList.remove("invisible")
+                }
+
                 const video = document.getElementById('qr');
                 const scanner = new QrScanner(
                     video,
@@ -32,7 +52,7 @@
                         document.getElementById("name").value = result.data
                         video.hidden = true
                         scanner.stop()
-                        setTimeout(function() {
+                        setTimeout(function () {
                             document.getElementById('form').submit();
                         }, 1000)
                     },
