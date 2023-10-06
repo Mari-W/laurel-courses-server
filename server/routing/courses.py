@@ -199,4 +199,4 @@ def scan(course):
 
     course.add_participation(student, tutor["sub"])
 
-    return redirect(url_for("scan"), **kwargs)
+    return redirect(url_for("scan", **kwargs))
