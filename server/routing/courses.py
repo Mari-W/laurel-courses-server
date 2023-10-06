@@ -202,7 +202,7 @@ def scan(course):
     )
 
 
-@courses_bp.route("/<course>/scan", methods=["GET"])
+@courses_bp.route("/<course>/scanned", methods=["GET"])
 @authorized_route
 def scanned(course):
     course = Course.from_str(course)
