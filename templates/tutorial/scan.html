@@ -4,7 +4,7 @@
 <div class="card rounded-3 p-2 border-0 mt-2">
     <div class="card-body">
         <div id="warning" class="alert alert-warning invisible" role="alert" >
-            Student has not yet joined the course
+            ..
         </div>
         <div id="success" class="alert alert-success invisible" role="alert" >
             ..
@@ -33,10 +33,15 @@
                 }
 
                 const url = new URL(window.location.href);
-                const hasWarning = url.searchParams.get("warning");
+                const warning = url.searchParams.get("warning");
                 const student = url.searchParams.get("student");
                 
-                if (hasWarning != null) {
+                if (warning != null) {
+                    if (warning == "1") {
+                        document.getElementById("warning").innerText = "student has not yet joined the course on git!"
+                    } else if (warning == "2") {
+                        document.getElementById("warning").innerText = "student has already participated in tutorial this week"
+                    }
                     document.getElementById("warning").classList.remove("invisible")
                 }
 

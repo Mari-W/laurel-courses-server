@@ -162,6 +162,9 @@ def join():
             500,
         )
 
+    if course.has_exercise("tutorial-sessions"):
+        course.set_points("tutorial-sessions", student, "mw1187", 0)
+
     return cors(redirect(f"{Env.get('GITEA_URL')}/{str(course)}/{student}"))
 
 
@@ -193,13 +196,20 @@ def scan(course):
         f = Fernet(Env.get("FERNET_KEY").encode("utf-8"))
         student = f.decrypt(student).decode("utf-8")
 
+    if not course.has_student(student):
+        return redirect(f"/courses/{str(course)}/scan?warning=1")
+
+    participation = course.get_participation_by_student(student)
+    weeks = list(map(lambda x: x.date.isocalendar()[1], participation))
+    if datetime.now().isocalendar()[1] in weeks:
+        return redirect(f"/courses/{str(course)}/scan?warning=2")
+
     course.add_participation(student, tutor["sub"])
 
-    return redirect(
-        f"/courses/{str(course)}/scan?student={student}" + ""
-        if course.has_student(student)
-        else "warning=True"
-    )
+    p = course.get_points("tutorial-sessions", student)
+    course.set_points("tutorial-sessions", student, "mw1187", p + 3)
+
+    return redirect(f"/courses/{str(course)}/scan?student={student}")
 
 
 @courses_bp.route("/<course>/scanned", methods=["GET"])
@@ -212,7 +222,8 @@ def scanned(course):
     tutor = session.get("user")
     if not (course.has_tutor(tutor["sub"]) or tutor["role"] == "admin"):
         return "unauthorized", 401
-    
+
     return render_template(
-        "tutorial/scanned.html", entries=course.list_participation_by_tutor(tutor["sub"])
+        "tutorial/scanned.html",
+        entries=course.get_participation_by_tutor(tutor["sub"]),
     )
