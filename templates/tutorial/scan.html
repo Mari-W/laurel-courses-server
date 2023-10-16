@@ -9,6 +9,9 @@
         <div id="success" class="alert alert-success invisible" role="alert" >
             ..
         </div>
+        <div id="success2" class="alert alert-success invisible" role="alert" >
+            ..
+        </div>
         <form action="" method="post" id="form">
             <div class="mb-3">
                 <label for="name" class="form-label">RZ account</label>
@@ -38,19 +41,19 @@
                 }
 
                 const url = new URL(window.location.href);
-                const warning = url.searchParams.get("warning");
+                const status = url.searchParams.get("status");
                 const student = url.searchParams.get("student");
                 
-                if (warning != null) {
-                    if (warning == "1") {
+                if (status != null) {
+                    if (status == "1") {
                         document.getElementById("warning").innerText = "student has not yet joined the course on git!"
                         document.getElementById("warning").classList.remove("invisible")
-                    } else if (warning == "2") {
+                    } else if (status == "2") {
                         document.getElementById("warning").innerText = "student has already participated in tutorial this week (if you try to scan for presentation status, you probably already clicked it before)"
                         document.getElementById("warning").classList.remove("invisible")
-                    } else if (warning == "3") {
-                        document.getElementById("success").innerText = "student got registered as presenting student for this week subsequently"
-                        document.getElementById("success").classList.remove("invisible")
+                    } else if (status == "3") {
+                        document.getElementById("success2").innerText = "student got registered as presenting student"
+                        document.getElementById("success2").classList.remove("invisible")
                     }
                 }
 
@@ -72,7 +75,7 @@
                     },
                     {
                         highlightCodeOutline: true,
-                        maxScansPerSecond: 1
+                        maxScansPerSecond: 2
                     },
                 );
                 scanner.start();

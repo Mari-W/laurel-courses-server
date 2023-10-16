@@ -197,7 +197,7 @@ def scan(course):
         student = f.decrypt(student).decode("utf-8")
 
     if not course.has_student(student):
-        return redirect(f"/courses/{str(course)}/scan?warning=1")
+        return redirect(f"/courses/{str(course)}/scan?status=1")
 
     participation = course.get_participation_by_student(student)
     weeks = {p.date.isocalendar()[1]: p for p in participation}
@@ -207,8 +207,8 @@ def scan(course):
         if "presented" in data and data["presented"] == "on":
             with database:
                 weeks[week].presented = True
-            return redirect(f"/courses/{str(course)}/scan?warning=3")
-        return redirect(f"/courses/{str(course)}/scan?warning=2")
+            return redirect(f"/courses/{str(course)}/scan?status=3")
+        return redirect(f"/courses/{str(course)}/scan?status=2")
 
     course.add_participation(
         student, tutor["sub"], "presented" in data and data["presented"] == "on"
@@ -217,7 +217,11 @@ def scan(course):
     p = course.get_points("tutorial-sessions", student)
     course.set_points("tutorial-sessions", student, "mw1187", p + 3)
 
-    return redirect(f"/courses/{str(course)}/scan?student={student}")
+    return redirect(
+        f"/courses/{str(course)}/scan?student={student}" + "?status=3"
+        if "presented" in data and data["presented"] == "on"
+        else ""
+    )
 
 
 @courses_bp.route("/<course>/scanned", methods=["GET"])
