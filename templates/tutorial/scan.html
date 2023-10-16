@@ -41,17 +41,17 @@
                 }
 
                 const url = new URL(window.location.href);
-                const status = url.searchParams.get("status");
+                const stat = url.searchParams.get("status");
                 const student = url.searchParams.get("student");
                 
-                if (status != null) {
-                    if (status == "1") {
+                if (stat != null) {
+                    if (stat == "1") {
                         document.getElementById("warning").innerText = "student has not yet joined the course on git!"
                         document.getElementById("warning").classList.remove("invisible")
-                    } else if (status == "2") {
-                        document.getElementById("warning").innerText = "student has already participated in tutorial this week (if you try to scan for presentation status, you probably already clicked it before)"
+                    } else if (stat == "2") {
+                        document.getElementById("warning").innerText = "student has already participated in tutorial this week"
                         document.getElementById("warning").classList.remove("invisible")
-                    } else if (status == "3") {
+                    } else if (stat == "3") {
                         document.getElementById("success2").innerText = "student got registered as presenting student"
                         document.getElementById("success2").classList.remove("invisible")
                     }

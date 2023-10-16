@@ -218,9 +218,8 @@ def scan(course):
     course.set_points("tutorial-sessions", student, "mw1187", p + 3)
 
     return redirect(
-        f"/courses/{str(course)}/scan?student={student}" + "?status=3"
-        if "presented" in data and data["presented"] == "on"
-        else ""
+        f"/courses/{str(course)}/scan?student={student}"
+        + ("?status=3" if "presented" in data and data["presented"] == "on" else "")
     )
 
 
