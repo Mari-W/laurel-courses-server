@@ -18,7 +18,7 @@ from server.exercises.course import Course
 from server.integration.gitea_exercises import gitea_exercises
 from server.routing.auth import cors
 from server.routing.decorators import authorized_route
-
+from server.database import database
 
 courses_bp = Blueprint("courses", __name__)
 
@@ -200,11 +200,19 @@ def scan(course):
         return redirect(f"/courses/{str(course)}/scan?warning=1")
 
     participation = course.get_participation_by_student(student)
-    weeks = list(map(lambda x: x.date.isocalendar()[1], participation))
-    if datetime.now().isocalendar()[1] in weeks:
+    weeks = {p.date.isocalendar()[1]: p for p in participation}
+    week = datetime.now().isocalendar()[1]
+
+    if week in weeks.keys():
+        if "presented" in data and data["presented"] == "on":
+            with database:
+                weeks[week].presented = True
+            return redirect(f"/courses/{str(course)}/scan?warning=3")
         return redirect(f"/courses/{str(course)}/scan?warning=2")
 
-    course.add_participation(student, tutor["sub"])
+    course.add_participation(
+        student, tutor["sub"], "presented" in data and data["presented"] == "on"
+    )
 
     p = course.get_points("tutorial-sessions", student)
     course.set_points("tutorial-sessions", student, "mw1187", p + 3)

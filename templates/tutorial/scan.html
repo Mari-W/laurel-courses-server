@@ -16,6 +16,11 @@
                 <div id="name_help" class="form-text text-danger">
                     only use if qr does not work; manually add the student by rz account
                 </div>
+                <label class="form-check-label" for="presented">student presented</label>
+                <input type="checkbox" class="form-check-input" name="presented" id="presented"  aria-describedby="presented_help">
+                <div id="presented_help" class="form-text text-danger">
+                    only click this if the student presented their work
+                </div>
             </div>
             <button type="submit" class="btn btn-success">Submit</button>
             <br>
@@ -39,10 +44,14 @@
                 if (warning != null) {
                     if (warning == "1") {
                         document.getElementById("warning").innerText = "student has not yet joined the course on git!"
+                        document.getElementById("warning").classList.remove("invisible")
                     } else if (warning == "2") {
                         document.getElementById("warning").innerText = "student has already participated in tutorial this week"
+                        document.getElementById("warning").classList.remove("invisible")
+                    } else if (warning == "2") {
+                        document.getElementById("success").innerText = "student got registered as presenting student for this week subsequently"
+                        document.getElementById("success").classList.remove("invisible")
                     }
-                    document.getElementById("warning").classList.remove("invisible")
                 }
 
                 if (student != null) {

@@ -1,12 +1,21 @@
-from sqlalchemy import UniqueConstraint, Column, Integer, String, Boolean, Text, DateTime, Float
+from sqlalchemy import (
+    UniqueConstraint,
+    Column,
+    Integer,
+    String,
+    Boolean,
+    Text,
+    DateTime,
+    Float,
+)
 
 from server.database import database
 
 
 class CourseEntity(database.Model):
-    __tablename__ = 'course'
+    __tablename__ = "course"
 
-    __table_args__ = (UniqueConstraint('name', 'semester', name='_course_uc'),)
+    __table_args__ = (UniqueConstraint("name", "semester", name="_course_uc"),)
 
     id = Column(Integer, primary_key=True)
 
@@ -26,9 +35,9 @@ class CourseEntity(database.Model):
 
 
 class TutorEntity(database.Model):
-    __tablename__ = 'tutor'
+    __tablename__ = "tutor"
 
-    __table_args__ = (UniqueConstraint('course', 'username', name='_tutor_uc'),)
+    __table_args__ = (UniqueConstraint("course", "username", name="_tutor_uc"),)
 
     id = Column(Integer, primary_key=True)
 
@@ -40,9 +49,9 @@ class TutorEntity(database.Model):
 
 
 class StudentEntity(database.Model):
-    __tablename__ = 'student'
+    __tablename__ = "student"
 
-    __table_args__ = (UniqueConstraint('course', 'username', name='_student_uc'),)
+    __table_args__ = (UniqueConstraint("course", "username", name="_student_uc"),)
 
     id = Column(Integer, primary_key=True)
 
@@ -54,9 +63,9 @@ class StudentEntity(database.Model):
 
 
 class TutorStudentEntity(database.Model):
-    __tablename__ = 'tutor_student'
+    __tablename__ = "tutor_student"
 
-    __table_args__ = (UniqueConstraint('course', 'student', name='_student_tutor_uc'),)
+    __table_args__ = (UniqueConstraint("course", "student", name="_student_tutor_uc"),)
 
     id = Column(Integer, primary_key=True)
 
@@ -66,9 +75,9 @@ class TutorStudentEntity(database.Model):
 
 
 class ExerciseEntity(database.Model):
-    __tablename__ = 'exercise'
+    __tablename__ = "exercise"
 
-    __table_args__ = (UniqueConstraint('course', 'name', name='_exercise_uc'),)
+    __table_args__ = (UniqueConstraint("course", "name", name="_exercise_uc"),)
 
     id = Column(Integer, primary_key=True)
 
@@ -83,9 +92,11 @@ class ExerciseEntity(database.Model):
 
 
 class StudentExerciseEntity(database.Model):
-    __tablename__ = 'student_exercise'
+    __tablename__ = "student_exercise"
 
-    __table_args__ = (UniqueConstraint('course', 'student', 'exercise', name='_student_exercise_uc'),)
+    __table_args__ = (
+        UniqueConstraint("course", "student", "exercise", name="_student_exercise_uc"),
+    )
 
     id = Column(Integer, primary_key=True)
 
@@ -97,13 +108,15 @@ class StudentExerciseEntity(database.Model):
 
     points = Column(Float, nullable=True)
 
+
 class TutorialParticipation(database.Model):
-    __tablename__ = 'tutorial_participation'
+    __tablename__ = "tutorial_participation"
 
     id = Column(Integer, primary_key=True)
 
     course = Column(String(128), nullable=False)
     student = Column(String(64), nullable=False)
     tutor = Column(String(64), nullable=False)
+    presented = Column(Boolean, nullable=False, default=False)
 
     date = Column(DateTime, nullable=False)

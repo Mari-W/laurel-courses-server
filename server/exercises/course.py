@@ -9,9 +9,20 @@ from sqlalchemy.exc import IntegrityError
 
 from server.database import database
 from server.error_handling import try_except, send_error
-from server.exercises.models import CourseEntity, StudentEntity, TutorEntity, TutorStudentEntity, ExerciseEntity, \
-    StudentExerciseEntity, TutorialParticipation
-from server.exercises.options import CreateCourseOption, AddTutorOption, CreateExerciseOption
+from server.exercises.models import (
+    CourseEntity,
+    StudentEntity,
+    TutorEntity,
+    TutorStudentEntity,
+    ExerciseEntity,
+    StudentExerciseEntity,
+    TutorialParticipation,
+)
+from server.exercises.options import (
+    CreateCourseOption,
+    AddTutorOption,
+    CreateExerciseOption,
+)
 from server.integration.auth_server import auth
 from server.integration.gitea_exercises import gitea_exercises
 from server.integration.rocket_chat import rocket
@@ -25,10 +36,17 @@ class Course:
     # general
     def create(self, options: CreateCourseOption) -> Optional[str]:
         if not self.exists_strict:
-            if try_except(lambda: rocket.add_course(str(self), options),
-                          lambda: rocket.remove_course(str(self))):
-                if try_except(lambda: gitea_exercises.add_course(str(self), options),
-                              lambda: [gitea_exercises.remove_course(str(self)), rocket.remove_course(str(self))]):
+            if try_except(
+                lambda: rocket.add_course(str(self), options),
+                lambda: rocket.remove_course(str(self)),
+            ):
+                if try_except(
+                    lambda: gitea_exercises.add_course(str(self), options),
+                    lambda: [
+                        gitea_exercises.remove_course(str(self)),
+                        rocket.remove_course(str(self)),
+                    ],
+                ):
                     with database as db:
                         db += CourseEntity(
                             name=self.name,
@@ -37,7 +55,7 @@ class Course:
                             display_name=options.display_name,
                             website=options.website,
                             restricted=False,
-                            open=options.joinable
+                            open=options.joinable,
                         )
                 else:
                     return f"failed creating {str(self)} in gitea"
@@ -51,7 +69,9 @@ class Course:
             if try_except(lambda: rocket.remove_course(str(self))):
                 if try_except(lambda: gitea_exercises.remove_course(str(self))):
                     with database:
-                        CourseEntity.query.delete_by(name=self.name, semester=self.semester)
+                        CourseEntity.query.delete_by(
+                            name=self.name, semester=self.semester
+                        )
                         StudentEntity.query.delete_by(course=str(self))
                         TutorEntity.query.delete_by(course=str(self))
                         TutorStudentEntity.query.delete_by(course=str(self))
@@ -104,11 +124,17 @@ class Course:
         if info:
             role = self.get_role(student, is_admin=info["role"] == "admin")
             if role is None:
-                if try_except(lambda: rocket.add_student(str(self), student),
-                              lambda: rocket.remove_student(str(self), student)):
-                    if try_except(lambda: gitea_exercises.add_student(str(self), student),
-                                  lambda: [gitea_exercises.remove_student(str(self), student),
-                                           rocket.remove_student(str(self), student)]):
+                if try_except(
+                    lambda: rocket.add_student(str(self), student),
+                    lambda: rocket.remove_student(str(self), student),
+                ):
+                    if try_except(
+                        lambda: gitea_exercises.add_student(str(self), student),
+                        lambda: [
+                            gitea_exercises.remove_student(str(self), student),
+                            rocket.remove_student(str(self), student),
+                        ],
+                    ):
                         # if try_except(lambda: drone.activate(str(self), student),
                         #               lambda: [gitea_exercises.remove_student(str(self), student),
                         #                        rocket.remove_student(str(self), student), drone.sync()]):
@@ -121,7 +147,7 @@ class Course:
                                     username=student,
                                     name=info["name"],
                                     email=info["email"],
-                                    matrikelnummer=info["matrikelnummer"]
+                                    matrikelnummer=info["matrikelnummer"],
                                 )
                         except IntegrityError as e:
                             # if student entity exist dont care
@@ -154,8 +180,10 @@ class Course:
                 pass
             try:
                 with database:
-                        StudentEntity.query.delete_by(course=str(self), username=student)
-                        StudentExerciseEntity.query.delete_by(course=str(self), student=student)
+                    StudentEntity.query.delete_by(course=str(self), username=student)
+                    StudentExerciseEntity.query.delete_by(
+                        course=str(self), student=student
+                    )
             except:
                 pass
 
@@ -168,7 +196,9 @@ class Course:
 
     @property
     def student_names(self):
-        return [student.username for student in StudentEntity.query.many(course=str(self))]
+        return [
+            student.username for student in StudentEntity.query.many(course=str(self))
+        ]
 
     # tutors
     def has_tutor(self, tutor: str):
@@ -180,11 +210,17 @@ class Course:
             info = auth.get_user_info(tutor)
             if info:
                 options.name = info["name"]
-                if try_except(lambda: rocket.add_tutor(str(self), tutor, options.name),
-                              lambda: rocket.remove_tutor(str(self), tutor)):
-                    if try_except(lambda: gitea_exercises.add_tutor(str(self), tutor, options),
-                                  lambda: [gitea_exercises.remove_tutor(str(self), tutor),
-                                           rocket.remove_tutor(str(self), tutor)]):
+                if try_except(
+                    lambda: rocket.add_tutor(str(self), tutor, options.name),
+                    lambda: rocket.remove_tutor(str(self), tutor),
+                ):
+                    if try_except(
+                        lambda: gitea_exercises.add_tutor(str(self), tutor, options),
+                        lambda: [
+                            gitea_exercises.remove_tutor(str(self), tutor),
+                            rocket.remove_tutor(str(self), tutor),
+                        ],
+                    ):
                         try:
                             with database as db:
                                 db += TutorEntity(
@@ -192,7 +228,7 @@ class Course:
                                     username=tutor,
                                     name=options.name,
                                     description=options.description,
-                                    email=info["email"]
+                                    email=info["email"],
                                 )
                         except IntegrityError as e:
                             # if he somehow exists
@@ -205,8 +241,11 @@ class Course:
                                     continue
                                 try:
                                     with database as db:
-                                        db += TutorStudentEntity(tutor=tutor, student=student.username,
-                                                                 course=str(self))
+                                        db += TutorStudentEntity(
+                                            tutor=tutor,
+                                            student=student.username,
+                                            course=str(self),
+                                        )
                                 except IntegrityError as e:
                                     # student already had tutor
                                     send_error(e)
@@ -223,13 +262,17 @@ class Course:
     def remove_tutor(self, tutor: str) -> Optional[str]:
         if self.has_tutor(tutor):
             if try_except(lambda: rocket.remove_tutor(str(self), tutor)):
-                if try_except(lambda: gitea_exercises.remove_tutor(str(self), tutor),
-                              lambda: rocket.add_tutor(str(self), tutor, tutor)):
+                if try_except(
+                    lambda: gitea_exercises.remove_tutor(str(self), tutor),
+                    lambda: rocket.add_tutor(str(self), tutor, tutor),
+                ):
                     with database:
                         TutorEntity.query.delete_by(course=str(self), username=tutor)
                     students = self.get_tutor_student_names(tutor)
                     with database:
-                        TutorStudentEntity.query.delete_by(course=str(self), tutor=tutor)
+                        TutorStudentEntity.query.delete_by(
+                            course=str(self), tutor=tutor
+                        )
                     for student in students:
                         self.assign_tutor(student)
                 else:
@@ -255,8 +298,11 @@ class Course:
 
             with database as db:
                 try:
-                    db += TutorStudentEntity(tutor=min(distribution, key=distribution.get), student=student,
-                                             course=str(self))
+                    db += TutorStudentEntity(
+                        tutor=min(distribution, key=distribution.get),
+                        student=student,
+                        course=str(self),
+                    )
                 except IntegrityError as e:
                     # student already got some tutor
                     send_error(e)
@@ -275,7 +321,9 @@ class Course:
                 # if student had no tutor till now, why so ever, add him
                 if not r:
                     with database as db:
-                        db += TutorStudentEntity(student=student, course=str(self), tutor=tutor)
+                        db += TutorStudentEntity(
+                            student=student, course=str(self), tutor=tutor
+                        )
                 # tutor changed, update tutor
                 elif r.tutor != tutor:
                     with database:
@@ -314,18 +362,25 @@ class Course:
 
     @property
     def tutor_students_count(self):
-        return dict(database.session.query(TutorStudentEntity.tutor, func.count(TutorStudentEntity.tutor)).filter_by(
-            course=str(self)).group_by(TutorStudentEntity.tutor).all())
+        return dict(
+            database.session.query(
+                TutorStudentEntity.tutor, func.count(TutorStudentEntity.tutor)
+            )
+            .filter_by(course=str(self))
+            .group_by(TutorStudentEntity.tutor)
+            .all()
+        )
 
     # exercises
 
-    def add_participation(self, student: str, tutor: str):
+    def add_participation(self, student: str, tutor: str, presented: bool):
         with database as db:
             db += TutorialParticipation(
                 course=str(self),
                 student=student,
                 tutor=tutor,
-                date=datetime.now()
+                date=datetime.now(),
+                presented=presented,
             )
 
     def get_participation_by_tutor(self, tutor: str):
@@ -334,19 +389,31 @@ class Course:
     def get_participation_by_student(self, student: str):
         return TutorialParticipation.query.many(course=str(self), student=student)
 
-    def add_exercise(self, exercise: str, options: CreateExerciseOption) -> Optional[str]:
+    def add_exercise(
+        self, exercise: str, options: CreateExerciseOption
+    ) -> Optional[str]:
         if not self.has_exercise(exercise):
             options.course_name = self.entity.display_name
             if " " not in exercise:
                 if options.start <= options.end:
-                    if try_except(lambda: rocket.add_exercise(str(self), exercise),
-                                  lambda: rocket.remove_exercise(str(self), exercise)):
+                    if try_except(
+                        lambda: rocket.add_exercise(str(self), exercise),
+                        lambda: rocket.remove_exercise(str(self), exercise),
+                    ):
                         if try_except(
-                                lambda: gitea_exercises.add_exercise(str(self), exercise, self.student_names, options),
-                                lambda: [
-                                    gitea_exercises.delete_exercise(str(self), options.course_name, exercise,
-                                                                    self.student_names),
-                                    rocket.remove_exercise(str(self), exercise)]):
+                            lambda: gitea_exercises.add_exercise(
+                                str(self), exercise, self.student_names, options
+                            ),
+                            lambda: [
+                                gitea_exercises.delete_exercise(
+                                    str(self),
+                                    options.course_name,
+                                    exercise,
+                                    self.student_names,
+                                ),
+                                rocket.remove_exercise(str(self), exercise),
+                            ],
+                        ):
                             # has to work, has_exercise checks integrity
                             with database as db:
                                 db += ExerciseEntity(
@@ -355,7 +422,7 @@ class Course:
                                     name=exercise,
                                     start=options.start,
                                     end=options.end,
-                                    points=options.points
+                                    points=options.points,
                                 )
                         else:
                             return f"could not create {exercise} in gitea"
@@ -371,12 +438,20 @@ class Course:
     def delete_exercise(self, exercise: str) -> Optional[str]:
         if self.has_exercise(exercise):
             if try_except(lambda: rocket.remove_exercise(str(self), exercise)):
-                if try_except(lambda: gitea_exercises.delete_exercise(str(self), self.entity.display_name, exercise,
-                                                                      self.student_names),
-                              lambda: rocket.add_exercise(str(self), exercise)):
+                if try_except(
+                    lambda: gitea_exercises.delete_exercise(
+                        str(self),
+                        self.entity.display_name,
+                        exercise,
+                        self.student_names,
+                    ),
+                    lambda: rocket.add_exercise(str(self), exercise),
+                ):
                     with database:
                         ExerciseEntity.query.delete_by(course=str(self), name=exercise)
-                        StudentExerciseEntity.query.delete_by(course=str(self), exercise=exercise)
+                        StudentExerciseEntity.query.delete_by(
+                            course=str(self), exercise=exercise
+                        )
                 else:
                     return f"could not delete {exercise} in gitea"
             else:
@@ -417,23 +492,35 @@ class Course:
         return StudentExerciseEntity.query.many(course=str(self), exercise=exercise)
 
     def get_student_exercise(self, exercise: str, student: str):
-        return StudentExerciseEntity.query.one(course=str(self), student=student, exercise=exercise)
+        return StudentExerciseEntity.query.one(
+            course=str(self), student=student, exercise=exercise
+        )
 
     @property
     def pending_exercises(self):
         now = datetime.now()
-        return [exercise for exercise in self.exercises if exercise.start <= now < exercise.end]
+        return [
+            exercise
+            for exercise in self.exercises
+            if exercise.start <= now < exercise.end
+        ]
 
     @property
     def finished_exercises(self):
         now = datetime.now()
         return [exercise for exercise in self.exercises if exercise.end < now]
 
-    def get_students_with_points(self, points: int, exercise: str, student_exercises=None):
+    def get_students_with_points(
+        self, points: int, exercise: str, student_exercises=None
+    ):
         if not student_exercises:
             student_exercises = self.get_student_exercises_by_exercise(exercise)
         return len(
-            [student_exercise for student_exercise in student_exercises if round(student_exercise.points) == points]
+            [
+                student_exercise
+                for student_exercise in student_exercises
+                if round(student_exercise.points) == points
+            ]
         )
 
     def get_exercise_stats(self, exercise: str, include_time_spent: bool = True):
@@ -443,8 +530,11 @@ class Course:
         student_exercises = self.get_student_exercises_by_exercise(exercise.name)
 
         def _find_student_exercise(student: str):
-            m = [student_exercise for student_exercise in student_exercises if
-                 student_exercise.student == student]
+            m = [
+                student_exercise
+                for student_exercise in student_exercises
+                if student_exercise.student == student
+            ]
             return m[0] if m else None
 
         res["exercise"] = {
@@ -458,24 +548,27 @@ class Course:
             for student in self.student_names:
                 student_exercise = _find_student_exercise(student)
                 if student_exercise is None:
-                    res["students"][student] = {
-                        "points": None,
-                        "tutor": None
-                    }
+                    res["students"][student] = {"points": None, "tutor": None}
                 else:
                     res["students"][student] = {
                         "points": student_exercise.points,
-                        "tutor": student_exercise.tutor
+                        "tutor": student_exercise.tutor,
                     }
 
                 if include_time_spent:
-                    res["students"][student]["time_spent"] = self.get_time_spent(exercise.name, student)
+                    res["students"][student]["time_spent"] = self.get_time_spent(
+                        exercise.name, student
+                    )
 
         return res
 
-    def get_student_exercises_stats(self, student: str, include_ungraded: bool = True,
-                                    return_exercises=False,
-                                    exercises=None):
+    def get_student_exercises_stats(
+        self,
+        student: str,
+        include_ungraded: bool = True,
+        return_exercises=False,
+        exercises=None,
+    ):
         # ugly code but less db queries ;)
         res = dict()
         if exercises is None:
@@ -483,8 +576,11 @@ class Course:
         student_exercises = self.get_student_exercises(student)
 
         def _find_student_exercise(exercise):
-            m = [student_exercise for student_exercise in student_exercises if
-                 student_exercise.exercise == exercise.name]
+            m = [
+                student_exercise
+                for student_exercise in student_exercises
+                if student_exercise.exercise == exercise.name
+            ]
             return m[0] if m else None
 
         total = 0
@@ -492,26 +588,30 @@ class Course:
 
         res["exercises"] = {}
 
-        for exercise, student_exercise in [(exercise, _find_student_exercise(exercise)) for exercise in exercises]:
+        for exercise, student_exercise in [
+            (exercise, _find_student_exercise(exercise)) for exercise in exercises
+        ]:
             if student_exercise:
                 total += student_exercise.points
                 max_total += exercise.points
                 res["exercises"][exercise.name] = {
                     "points": student_exercise.points,
                     "max_points": exercise.points,
-                    "tutor": student_exercise.tutor
+                    "tutor": student_exercise.tutor,
                 }
             elif include_ungraded:
                 max_total += exercise.points
                 res["exercises"][exercise.name] = {
                     "points": 0,
                     "max_points": exercise.points,
-                    "tutor": None
+                    "tutor": None,
                 }
 
         res["total"] = total
         res["max_total"] = max_total
-        res["percentage"] = round((total / max_total) * 100, 1) if max_total != 0 else 0.0
+        res["percentage"] = (
+            round((total / max_total) * 100, 1) if max_total != 0 else 0.0
+        )
         # for efficiency in courses/exercises route
         if return_exercises:
             return exercises, res
@@ -552,7 +652,7 @@ class Course:
                     exercise=exercise,
                     student=student,
                     tutor=tutor,
-                    points=points
+                    points=points,
                 )
 
     # util
@@ -561,7 +661,7 @@ class Course:
         return f"{self.semester}-{self.name}"
 
     def __hash__(self):
-        return int.from_bytes(str(self).encode(), 'little')
+        return int.from_bytes(str(self).encode(), "little")
 
     @property
     def dict(self):
@@ -577,9 +677,13 @@ class Course:
 
     @property
     def exists_strict(self):
-        cs = list(filter(lambda
-                             course: course.name.lower() == self.name.lower() and course.semester.lower() == self.semester.lower(),
-                         CourseEntity.query.all()))
+        cs = list(
+            filter(
+                lambda course: course.name.lower() == self.name.lower()
+                and course.semester.lower() == self.semester.lower(),
+                CourseEntity.query.all(),
+            )
+        )
         return True if cs else False
 
     @property
@@ -596,8 +700,14 @@ class Course:
 
     @staticmethod
     def all_courses():
-        return [course for course in [Course(course.name, course.semester) for course in CourseEntity.query.all()] if
-                course.is_valid]
+        return [
+            course
+            for course in [
+                Course(course.name, course.semester)
+                for course in CourseEntity.query.all()
+            ]
+            if course.is_valid
+        ]
 
     @staticmethod
     def from_req():
@@ -624,9 +734,13 @@ class Course:
             if c.exists and c.is_valid:
                 return c
             else:
-                cs = list(filter(
-                    lambda course: course.name.lower() == name.lower() and course.semester.lower() == semester.lower(),
-                    CourseEntity.query.all()))
+                cs = list(
+                    filter(
+                        lambda course: course.name.lower() == name.lower()
+                        and course.semester.lower() == semester.lower(),
+                        CourseEntity.query.all(),
+                    )
+                )
                 if not cs:
                     return None
                 c = Course(semester=cs[0].semester, name=cs[0].name)

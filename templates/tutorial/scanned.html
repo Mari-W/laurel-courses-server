@@ -1,20 +1,21 @@
 {% with name="Tutorial Overview" %}
-    {% include "header.html" %}
+{% include "header.html" %}
 {% endwith %}
 <table class="table table-borderless table-sm ms-2">
     <thead>
-    <tr>
-        <th scope="col">Student</th>
-        <th scope="col">Time</th>
-    </tr>
+        <tr>
+            <th scope="col">Student</th>
+            <th scope="col">Time</th>
+        </tr>
     </thead>
     <tbody>
-    {% for entry in entries %}
+        {% for entry in entries %}
         <tr>
             <th scope="row">{{ entry.student }}</th>
-            <td>{{  entry.date }}</td>
+            <td>{{ entry.date }}</td>
+            <td>{{ entry.presented }}</td>
         </tr>
-    {% endfor %}
+        {% endfor %}
     </tbody>
 </table>
 {% include "footer.html" %}
