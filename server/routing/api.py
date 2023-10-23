@@ -25,7 +25,9 @@ def tutors(course):
     if not course:
         return "course not found", 404
 
-    return jsonify({tutor: course.get_tutor_student_names(tutor) for tutor in course.tutor_names})
+    return jsonify(
+        {tutor: course.get_tutor_student_names(tutor) for tutor in course.tutor_names}
+    )
 
 
 @api_bp.route("/course/<course>/is_tutor/<tutor>", methods=["GET"])
@@ -38,7 +40,8 @@ def is_tutor(course, tutor):
     if not course.has_tutor(tutor):
         return "not a tutor", 404
     return "", 200
-    
+
+
 @api_bp.route("/course/<course>/is_student/<student>", methods=["GET"])
 @admin_route
 def is_student(course, student):
@@ -50,6 +53,7 @@ def is_student(course, student):
         return "not a student", 404
     return "", 200
 
+
 @api_bp.route("/course/<course>/exercises", methods=["GET"])
 @admin_route
 def exercises(course):
@@ -57,8 +61,18 @@ def exercises(course):
     if not course:
         return "course not found", 404
 
-    return jsonify([{"name": exercise.name, "points": exercise.points, "start": exercise.start.isoformat(),
-                     "end": exercise.end.isoformat()} for exercise in course.finished_exercises])
+    return jsonify(
+        [
+            {
+                "name": exercise.name,
+                "points": exercise.points,
+                "start": exercise.start.isoformat(),
+                "end": exercise.end.isoformat(),
+            }
+            for exercise in course.finished_exercises
+        ]
+    )
+
 
 @api_bp.route("/course/<course>/students", methods=["GET"])
 @admin_route
@@ -67,8 +81,7 @@ def students(course):
     if not course:
         return "course not found", 404
 
-    return jsonify({"students": course.students})
-
+    return jsonify({student.username: student.to_dict() for student in course.students})
 
 
 @api_bp.route("/course/<course>/exercises/stats", methods=["GET"])
@@ -86,9 +99,12 @@ def stats(course):
 
     for student in course.students:
         res[student.username] = {
-            "matrikelnummer": users[student.username]["matrikelnummer"] if student.username in users else None,
-            **course.get_student_exercises_stats(student.username, exercises=exercises,
-                                                 include_ungraded=include_ungraded)
+            "matrikelnummer": users[student.username]["matrikelnummer"]
+            if student.username in users
+            else None,
+            **course.get_student_exercises_stats(
+                student.username, exercises=exercises, include_ungraded=include_ungraded
+            ),
         }
     return jsonify(res)
 
@@ -105,7 +121,10 @@ def exercise_stats(course, exercise):
 
     include_time_spent = "include_time_spent" in request.args
 
-    return jsonify(course.get_exercise_stats(exercise.name, include_time_spent=include_time_spent))
+    return jsonify(
+        course.get_exercise_stats(exercise.name, include_time_spent=include_time_spent)
+    )
+
 
 @api_bp.route("/course/<course>/exercises/stats.md", methods=["GET"])
 @admin_route
@@ -116,17 +135,23 @@ def exercise_tables(course):
     points_table = StatsTable()
     time_spent_table = StatsTable()
     now = datetime.now()
-    md = f"# {course.name}: Exercise Stats\n\n" 
+    md = f"# {course.name}: Exercise Stats\n\n"
     for exercise in course.finished_exercises:
         if exercise.end < now:
             res = course.get_exercise_stats(exercise.name, include_time_spent=True)
-            students_points = [v["points"] for v in res["students"].values() if
-                           "points" in v and v["points"] and "tutor" in v and v["tutor"]]
+            students_points = [
+                v["points"]
+                for v in res["students"].values()
+                if "points" in v and v["points"] and "tutor" in v and v["tutor"]
+            ]
         if students_points:
             points_table.add_row(exercise.name, students_points)
 
-        students_time_spent = [v["time_spent"] for v in res["students"].values() if
-                               "time_spent" in v and v["time_spent"]]
+        students_time_spent = [
+            v["time_spent"]
+            for v in res["students"].values()
+            if "time_spent" in v and v["time_spent"]
+        ]
         if students_time_spent:
             time_spent_table.add_row(exercise.name, students_time_spent)
 
@@ -135,14 +160,15 @@ def exercise_tables(course):
         md += "### Point Distribution\n\n"
         md += s + "\n\n"
     except ZeroDivisionError:
-         pass
+        pass
 
     try:
-        s = time_spent_table.to_table().to_markdown_str(formatter=time_spent_table.formatter())
+        s = time_spent_table.to_table().to_markdown_str(
+            formatter=time_spent_table.formatter()
+        )
         md += "### Time Distribution\n\n"
         md += s + "\n"
     except ZeroDivisionError:
         pass
 
     return md.replace("\n", "<br>"), 200
-
