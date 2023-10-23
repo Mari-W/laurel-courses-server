@@ -60,6 +60,16 @@ def exercises(course):
     return jsonify([{"name": exercise.name, "points": exercise.points, "start": exercise.start.isoformat(),
                      "end": exercise.end.isoformat()} for exercise in course.finished_exercises])
 
+@api_bp.route("/course/<course>/students", methods=["GET"])
+@admin_route
+def students(course):
+    course = Course.from_str(course)
+    if not course:
+        return "course not found", 404
+
+    return jsonify({"students": course.students})
+
+
 
 @api_bp.route("/course/<course>/exercises/stats", methods=["GET"])
 @admin_route
