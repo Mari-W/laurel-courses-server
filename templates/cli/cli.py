@@ -396,7 +396,7 @@ class Course:
         for path in git.modified:
             elements = path.split("/")
             if len(elements) != 4 or elements[-1].lower() != "readme.md" \
-                    or elements[2] not in self.finished_exercises:
+                    or elements[2] not in self.finished_exercises or elements[2] == "tutorial-sessions":
                 continue
 
             with open(path, "r", encoding="utf-8") as readme:
