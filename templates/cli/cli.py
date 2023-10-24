@@ -351,6 +351,8 @@ class Course:
     def append_builds(self):
         for student in self.students:
             for exercise in self.finished_exercises:
+                if exercise == "tutorial-sessions":
+                    continue
                 readme_path = f"{COURSE}/{student}/{exercise}/README.md"
                 if os.path.isfile(readme_path):
                     with open(readme_path, "r", encoding="utf-8") as readme:
