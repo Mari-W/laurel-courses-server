@@ -23,7 +23,7 @@ from server.database import database
 courses_bp = Blueprint("courses", __name__)
 
 
-@courses_bp.route("/2022WS-EiP/exam", methods=["GET"])
+@courses_bp.route("/2023WS-EiP/exam", methods=["GET"])
 @authorized_route
 def exam():
     user = session.get("user")
