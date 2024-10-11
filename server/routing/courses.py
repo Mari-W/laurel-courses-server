@@ -215,7 +215,7 @@ def scan(course):
     )
 
     p = course.get_points("tutorial-sessions", student)
-    course.set_points("tutorial-sessions", student, "mw1187", p + 6)
+    course.set_points("tutorial-sessions", student, "mw1187", p + Env.get_int("TUTORIAL_POINTS"))
 
     return redirect(
         f"/courses/{str(course)}/scan?student={student}"
