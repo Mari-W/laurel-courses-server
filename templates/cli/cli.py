@@ -297,9 +297,9 @@ class Course:
         # pull rebase all changes
         git.pull()
         # insert 0P for people with no files in the exercise directory
-        # self.grade_no_submission()
+        self.grade_no_submission()
         # append build logs to all readmes
-        # self.append_builds()
+        self.append_builds()
 
         print("Done.")
 
@@ -331,69 +331,69 @@ class Course:
                 for repository in obsolete_repositories:
                     rmtree(f"{COURSE}/{repository}")
 
-    # def get_build(self, student: str, exercise: str):
-    #     if self.__logs.get((student, exercise)) is None:
-    #         r = session.get(f"{CLI_API_URL}/{COURSE}/logs/{student}/{exercise}")
-    #         if r.status_code == 404:
-    #             self.__logs[(student, exercise)] = None
-    #         elif r.status_code != 200:
-    #             print(f"Could not obtain build latest log for {exercise} of {student}.")
-    #             print(f"API responded: {r.status_code}: {r.text}")
-    #             print("Please contact server administrator.")
-    #             exit(1)
-    #         else:
-    #             build = json.loads(r.text)
-    #             self.__logs[(student, exercise)] = {
-    #                 "failure": build["failure"],
-    #                 "logs": json.loads(build["logs"])
-    #             }
-    #     return self.__logs[(student, exercise)]
+    def get_build(self, student: str, exercise: str):
+        if self.__logs.get((student, exercise)) is None:
+            r = session.get(f"{CLI_API_URL}/{COURSE}/logs/{student}/{exercise}")
+            if r.status_code == 404:
+                self.__logs[(student, exercise)] = None
+            elif r.status_code != 200:
+                print(f"Could not obtain build latest log for {exercise} of {student}.")
+                print(f"API responded: {r.status_code}: {r.text}")
+                print("Please contact server administrator.")
+                exit(1)
+            else:
+                build = json.loads(r.text)
+                self.__logs[(student, exercise)] = {
+                    "failure": build["failure"],
+                    "logs": json.loads(build["logs"])
+                }
+        return self.__logs[(student, exercise)]
 
-    # def append_builds(self):
-    #     for student in self.students:
-    #         for exercise in self.finished_exercises:
-    #             if exercise == "tutorial-sessions":
-    #                 continue
-    #             readme_path = f"{COURSE}/{student}/{exercise}/README.md"
-    #             if os.path.isfile(readme_path):
-    #                 with open(readme_path, "r", encoding="utf-8") as readme:
-    #                     if any(["## Build" in line for line in readme.readlines()]):
-    #                         continue
-    #                 with open(readme_path, "a", encoding="utf-8") as readme:
-    #                     build = self.get_build(student, exercise)
-    #                     if not build:
-    #                         readme.write("\n")
-    #                         readme.write(f"## Build ⚫ (not found)")
-    #                         continue
-    #                     readme.write("\n")
-    #                     readme.write(f"## Build {'🔴 (failure)' if build['failure'] else '🟢 (success)'}")
-    #                     for step in build["logs"]:
-    #                         readme.write("\n")
-    #                         readme.write(f"### {step['name']} {'🔴 (failure)' if step['failure'] else '🟢 (success)'}")
-    #                         readme.write("\n")
-    #                         readme.write("```bash")
-    #                         readme.write("\n")
-    #                         readme.write("\n".join([log for log in step["logs"] if log]))
-    #                         readme.write("\n")
-    #                         readme.write("```")
+    def append_builds(self):
+        for student in self.students:
+            for exercise in self.finished_exercises:
+                if exercise == "tutorial-sessions":
+                    continue
+                readme_path = f"{COURSE}/{student}/{exercise}/README.md"
+                if os.path.isfile(readme_path):
+                    with open(readme_path, "r", encoding="utf-8") as readme:
+                        if any(["## Build" in line for line in readme.readlines()]):
+                            continue
+                    with open(readme_path, "a", encoding="utf-8") as readme:
+                        build = self.get_build(student, exercise)
+                        if not build:
+                            readme.write("\n")
+                            readme.write(f"## Build ⚫ (not found)")
+                            continue
+                        readme.write("\n")
+                        readme.write(f"## Build {'🔴 (failure)' if build['failure'] else '🟢 (success)'}")
+                        for step in build["logs"]:
+                            readme.write("\n")
+                            readme.write(f"### {step['name']} {'🔴 (failure)' if step['failure'] else '🟢 (success)'}")
+                            readme.write("\n")
+                            readme.write("```bash")
+                            readme.write("\n")
+                            readme.write("\n".join([log for log in step["logs"] if log]))
+                            readme.write("\n")
+                            readme.write("```")
 
-    # def grade_no_submission(self):
-    #     for student in self.students:
-    #         for exercise in self.finished_exercises:
-    #             exercise_path = f"{COURSE}/{student}/{exercise}"
-    #             if os.path.isdir(exercise_path):
-    #                 files = next(os.walk(f"{COURSE}/{student}/{exercise}"))[2]
-    #                 if files == ["README.md"] or files == ["README.md", "NOTES.md"] or files == ["NOTES.md", "README.md"]:
-    #                     with open(f"{exercise_path}/README.md", "r", encoding="utf-8") as readme:
-    #                         first_line = readme.readline()
-    #                         matches = re.findall(r"\?\? */ *(\d+[,.]?\d*)", first_line)
-    #                         if matches:
-    #                             with open(f"{exercise_path}/README.md", "w", encoding="utf-8") as readme:
-    #                                 first_line = first_line.replace("??", "0")
-    #                                 readme.write(f"{first_line}\n")
-    #                                 readme.write("No submission.\n")
-    #                                 readme.write("This exercise was graded as 'no submission' automatically.\n")
-    #                                 readme.write("If you believe this is an error, contact your tutor.\n")
+    def grade_no_submission(self):
+        for student in self.students:
+            for exercise in self.finished_exercises:
+                exercise_path = f"{COURSE}/{student}/{exercise}"
+                if os.path.isdir(exercise_path):
+                    files = next(os.walk(f"{COURSE}/{student}/{exercise}"))[2]
+                    if files == ["README.md"] or files == ["README.md", "NOTES.md"] or files == ["NOTES.md", "README.md"]:
+                        with open(f"{exercise_path}/README.md", "r", encoding="utf-8") as readme:
+                            first_line = readme.readline()
+                            matches = re.findall(r"\?\? */ *(\d+[,.]?\d*)", first_line)
+                            if matches:
+                                with open(f"{exercise_path}/README.md", "w", encoding="utf-8") as readme:
+                                    first_line = first_line.replace("??", "0")
+                                    readme.write(f"{first_line}\n")
+                                    readme.write("No submission.\n")
+                                    readme.write("This exercise was graded as 'no submission' automatically.\n")
+                                    readme.write("If you believe this is an error, contact your tutor.\n")
 
     def validate_readmes(self):
         for path in git.modified:
