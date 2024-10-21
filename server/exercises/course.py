@@ -284,22 +284,22 @@ class Course:
 
     def assign_tutor(self, student: str):
         if not student.startswith("test"):
-            tutors = self.tutor_names
+            # tutors = self.tutor_names
 
             # will be assigned on first tutor join
-            if not tutors:
-                return
+            # if not tutors:
+            #     return
 
-            distribution = self.tutor_students_count
+            #distribution = self.tutor_students_count
 
-            for tutor in tutors:
-                if tutor not in distribution.keys():
-                    distribution[tutor] = 0
+            # for tutor in tutors:
+            #     if tutor not in distribution.keys():
+            #         distribution[tutor] = 0
 
             with database as db:
                 try:
                     db += TutorStudentEntity(
-                        tutor=min(distribution, key=distribution.get),
+                        tutor="no_tutor",
                         student=student,
                         course=str(self),
                     )
