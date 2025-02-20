@@ -23,9 +23,9 @@ from server.database import database
 courses_bp = Blueprint("courses", __name__)
 
 
-@courses_bp.route("/2023WS-EiP/exam", methods=["GET"])
+@courses_bp.route("/<course>/exam", methods=["GET"])
 @authorized_route
-def exam():
+def exam(course):
     user = session.get("user")
     matnr = user["matrikelnummer"]
     with open("/app/templates/exam/dist.json", "r") as f:
